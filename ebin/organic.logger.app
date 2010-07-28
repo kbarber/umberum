@@ -1,8 +1,8 @@
 {application, 'organic.logger',
  [{description, "Organic Logger"},
   {vsn, "1"},
-  {modules, ['organic.logger']},
-  {registered, ['organic.logger']},
+  {modules, [organic.logger.sup]},
+  {registered, []},
   {applications, [kernel,stdlib,sasl]},
   {mod, {organic.logger.app,[]}}
  ]}.
