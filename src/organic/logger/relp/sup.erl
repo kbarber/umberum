@@ -16,7 +16,7 @@
 %% A startup function for spawning new client connection handling FSM.
 %% To be called by the TCP listener process.
 start_client() ->
-    .supervisor:start_child(.organic.logger.relp.client_sup, []).
+    .supervisor:start_child('.organic.logger.relp.client_sup', []).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks
