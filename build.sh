@@ -7,6 +7,11 @@ function my_mkdir() {
     fi
 }
 
-my_mkdir ebin/organic/logger
+my_mkdir ebin/organic/logger/relp
 
 erl -make
+
+cd ebin/
+erlc -I. organic.logger-1.rel
+
+#erl -s systools make_script organic.logger-1 -s erlang halt
