@@ -1,7 +1,16 @@
+%% --------------------------
+%% @copyright 2010 Kenneth Barber
+%% @doc Application module for Organic Logger
+%% 
+%% @end
+%% --------------------------
+
 -module(organic.logger.sup).
 -behaviour(supervisor).
 -export([start_link/0]).
 -export([init/1]).
+
+%% @doc Start and link to this module
 start_link() ->
     .supervisor:start_link(.organic.logger.sup, []).
 

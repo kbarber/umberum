@@ -1,11 +1,16 @@
-% This is a state based connection handler for receiving and parsing
-% RELP based protocol logging traffic. See here for reference:
-%
-% http://www.rsyslog.com/doc/relp.html
-% http://www.librelp.com/relp.html
+%% --------------------------
+%% @copyright 2010 Kenneth Barber
+%% @doc This is a state based connection handler for receiving and parsing
+%% RELP based protocol logging traffic. See here for reference:
+%%
+%% http://www.rsyslog.com/doc/relp.html
+%% http://www.librelp.com/relp.html
+%% 
+%% @end
+%% --------------------------
+% 
 
 -module(.organic.logger.relp.con_fsm).
--author('saleyn@gmail.com').
 
 -behaviour(gen_fsm).
 
@@ -23,7 +28,8 @@
 
 -record(state, {
                 socket,    % client socket
-                addr       % client address
+                addr,      % client address
+	        session    % session pid
                }).
 
 -record(relp_packet, {
@@ -35,8 +41,6 @@
 	  data,
 	  trailer
 	  }).
-
--define(TIMEOUT, 120000).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -54,6 +58,11 @@
 start_link() ->
     .gen_fsm:start_link(?MODULE, [], []).
 
+%% --------------------------
+%% @doc 
+%%
+%% @end
+%% --------------------------
 set_socket(Pid, Socket) when is_pid(Pid), is_port(Socket) ->
     .gen_fsm:send_event(Pid, {socket_ready, Socket}).
 
@@ -84,7 +93,9 @@ init([]) ->
     % Now we own the socket
     .inet:setopts(Socket, [{active, once}, {packet, raw}, binary]),
     {ok, {IP, _Port}} = .inet:peername(Socket),
-    {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP}, ?TIMEOUT};
+    {ok, SessionPid} = .organic.logger.relp.session_sup:start_client(Socket),
+    link(SessionPid),
+    {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid}};
 'WAIT_FOR_SOCKET'(Other, State) ->
     %TODO: proper logging
     .error_logger:error_msg("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
@@ -92,9 +103,8 @@ init([]) ->
     {next_state, 'WAIT_FOR_SOCKET', State}.
 
 %% Notification event coming from client
-'WAIT_FOR_DATA'({data, Data}, #state{socket=S} = State) ->
-    %ok = .gen_tcp:send(S, Data),
-    .io:format("~p~n", [Data]),
+'WAIT_FOR_DATA'({data, Data}, #state{socket=S,session=Session} = State) ->
+    % .io:format("RCV: ~p~n", [binary_to_list(Data)]),
     %% TODO: regular expressions are probably slow here - need a non -regexp
     %%       way of doing this.
     %% TODO: This regexp does not handle partial packets due to the inability of me 
@@ -118,45 +128,29 @@ init([]) ->
 	    % In the opposite case, it indicates the packet is mangled somehow.
 	    case PR#relp_packet.datalen == PR#relp_packet.datalencur of
 		true -> 
-		    % TODO: We have all the data, move onto the next stage
-		    .io:format("We have all the data~n"),
-		    ok;
+		    .gen_fsm:send_event(Session, {PR#relp_packet.command, PR});
 		false -> 
 		    case PR#relp_packet.datalen > PR#relp_packet.datalencur of
 			true ->
 			    % TODO: We're missing data, switch states so we can receive the rest
 			    ok;
 			false ->
-			    % TODO: We have too much data. Packet therefore is invalid I guess.
+			    % TODO: We have too much data. There is probably many packets here.
+			    .io:format("TODO: Multiple RELP packets received in one TCP packet. I cannot handle this yet: ~p~n",[Data]),
 			    ok
 		    end,
 		    ok
-	    end,
-
-	    % TODO: may want to apply state changes to deal with 'open' -> 'rsp' and 'rsp' -> 'close'
-
-	    .io:format("all_data: ~p~n", [PR#relp_packet.all_data]), %TODO: proper logging
-	    .io:format("txnr: ~p~n", [PR#relp_packet.txnr]),
-	    .io:format("command: ~p~n", [PR#relp_packet.command]), 	    
-	    .io:format("datalen: ~p~n", [PR#relp_packet.datalen]),
-	    .io:format("datalencur: ~p~n", [PR#relp_packet.datalencur]),
-	    .io:format("data: ~p~n", [PR#relp_packet.data]),
-    	    .io:format("trailer: ~p~n", [PR#relp_packet.trailer]); 
-	    
-	{match, Capture} ->
-	    .io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin
+	    end;	    
+	{match, Capture} -> ok;
+	    %.io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin
 	nomatch -> ok;
         Other -> ok
     end,
-    {next_state, 'WAIT_FOR_DATA', State, ?TIMEOUT};
-
-'WAIT_FOR_DATA'(timeout, State) ->
-    .error_logger:error_msg("~p Client connection timeout - closing.\n", [self()]),
-    {stop, normal, State};
+    {next_state, 'WAIT_FOR_DATA', State};
 
 'WAIT_FOR_DATA'(Data, State) ->
     .io:format("~p Ignoring data: ~p\n", [self(), Data]),
-    {next_state, 'WAIT_FOR_DATA', State, ?TIMEOUT}.
+    {next_state, 'WAIT_FOR_DATA', State}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_event/3
@@ -196,6 +190,9 @@ handle_info({tcp, Socket, Bin}, StateName, #state{socket=Socket} = StateData) ->
 handle_info({tcp_closed, Socket}, _StateName,
             #state{socket=Socket, addr=Addr} = StateData) ->
     .error_logger:info_msg("~p Client ~p disconnected.\n", [self(), Addr]),
+    {stop, normal, StateData};
+
+handle_info({EXIT,_,_}, _StateName, StateData) ->
     {stop, normal, StateData};
 
 handle_info(_Info, StateName, StateData) ->

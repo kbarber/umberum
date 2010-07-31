@@ -1,3 +1,12 @@
+%% --------------------------
+%% @copyright 2010 Kenneth Barber
+%% @doc This listener is an async accept based TCP listener
+%% 
+%% @end
+%% TODO: This module may be better of being generic so we can spawn many processes like it easily.
+%% TODO: ipv6 support is possible but requires a seperate listener I believe.
+%% --------------------------
+
 -module(.organic.logger.relp.listener).
 -author('saleyn@gmail.com').
 
@@ -102,7 +111,7 @@ handle_info({inet_async, ListSock, Ref, {ok, CliSocket}},
 
         %% New client connected - spawn a new process using the simple_one_for_one
         %% supervisor.
-        {ok, Pid} = .organic.logger.relp.sup:start_client(),
+        {ok, Pid} = .organic.logger.relp.con_sup:start_client(),
         .gen_tcp:controlling_process(CliSocket, Pid),
         %% Instruct the new FSM that it owns the socket.
         Module:set_socket(Pid, CliSocket),
@@ -151,8 +160,12 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%------------------------------------------------------------------------
 
-%% Taken from prim_inet.  We are merely copying some socket options from the
-%% listening socket to the new client socket.
+%%-------------------------------------------------------------------------
+%% @doc  Copy socket options from the listening socket to the new client 
+%% socket.
+%% @end
+%% @private
+%%-------------------------------------------------------------------------
 set_sockopt(ListSock, CliSocket) ->
     true = .inet_db:register_socket(CliSocket, inet_tcp),
     case .prim_inet:getopts(ListSock, [active, nodelay, keepalive, delay_send, priority, tos]) of
