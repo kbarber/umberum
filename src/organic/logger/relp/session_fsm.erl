@@ -156,10 +156,17 @@ handle_sync_event(Event, _From, StateName, StateData) ->
 %%          {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
-handle_info({EXIT,_,_}, StateName, StateData) -> 
+handle_info({EXIT,From,_}, StateName, #state{socket=Socket,syslog=Syslog} = StateData) -> 
     % This is how we receive signals from the connection process when it stops
     % In this case, we just stop as well.
-    {stop, normal, StateData};
+    case From of
+	Syslog ->
+	    {ok, SyslogPid} = .organic.logger.relp.syslog_sup:start_client(Socket),
+	    link(SyslogPid),
+	    {next_state, StateName, #state{socket=Socket,syslog=SyslogPid}};
+	Other -> 
+	    {stop, normal, StateData}
+    end;
 handle_info(_Info, StateName, StateData) ->
     {noreply, StateName, StateData}.
 

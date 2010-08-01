@@ -29,6 +29,7 @@
 
 -record(syslog_packet, {
 	  facility,
+	  severity,
 	  timestamp,
 	  hostname,
 	  tag,
@@ -70,7 +71,34 @@ init([Socket]) ->
 %% @end
 %% --------------------------
 'RECEIVE'({msg, Data}, #state{socket=S} = State)->
-    .io:format("DATA: ~p~n", [Data]),
+    HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+):\\s(.*?)",
+    ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
+    case .re:run(Data,HeaderRe,ReOpts) of
+	{match, [_All,Priority,Timestamp,Hostname,Tag,Content]} -> 
+	    SR = #syslog_packet{
+	      facility = binary_to_integer(Priority) div 8,
+	      severity = binary_to_integer(Priority) rem 8,
+	      timestamp = binary_to_list(Timestamp),
+	      hostname = binary_to_list(Hostname),
+	      tag = binary_to_list(Tag),
+	      content = Content},
+
+	    .io:format("<data>~n"++
+		       .io_lib:format("  facility = ~p~n", [SR#syslog_packet.facility])++
+		       .io_lib:format("  severity = ~p~n", [SR#syslog_packet.severity])++
+		       .io_lib:format("  timestamp = ~p~n", [SR#syslog_packet.timestamp])++
+		       .io_lib:format("  hostname = ~p~n", [SR#syslog_packet.hostname])++
+		       .io_lib:format("  tag = ~p~n", [SR#syslog_packet.tag])++
+		       .io_lib:format("  content = ~p~n", [SR#syslog_packet.content])++
+		       "</data>~n"),
+
+	    ok;
+	{match, Capture} -> ok;
+	    %.io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin
+	nomatch -> ok;
+        Other -> ok
+    end,
+    %.io:format("DATA: ~p~n", [Data]),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(Msg,State) ->
     {next_state, 'RECEIVE', State}.
@@ -120,6 +148,17 @@ handle_info(_Info, StateName, StateData) ->
 %%-------------------------------------------------------------------------
 terminate(_Reason, _StateName, #state{socket=Socket}) ->
     ok.
+
+%%-------------------------------------------------------------------------
+%% Func: binary_to_integer/1
+%% Purpose: Translate binary to integer
+%% Returns: integer()
+%% @private
+%%-------------------------------------------------------------------------
+binary_to_integer(Binary) ->
+    %TODO: find a built-in way of doing this
+    %TODO: consider putting this in a shared place
+    list_to_integer(binary_to_list(Binary)).
 
 %%-------------------------------------------------------------------------
 %% Func: code_change/4
