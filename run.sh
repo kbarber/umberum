@@ -4,4 +4,4 @@
 ./build.sh
 
 cd ebin
-erl -boot organic.logger-1
+erl +P 100000000 +A 1 +K true -boot organic.logger-1

@@ -83,15 +83,17 @@ init([Socket]) ->
 	      tag = binary_to_list(Tag),
 	      content = Content},
 
-	    .io:format("<data>~n"++
+	    % TODO: logging to one file isn't that useful
+	    {ok,LogFile} = .file:open("/tmp/log", [ write, append]),
+	    .file:write(LogFile, list_to_binary(.io_lib:format("<data>~n"++
 		       .io_lib:format("  facility = ~p~n", [SR#syslog_packet.facility])++
 		       .io_lib:format("  severity = ~p~n", [SR#syslog_packet.severity])++
 		       .io_lib:format("  timestamp = ~p~n", [SR#syslog_packet.timestamp])++
 		       .io_lib:format("  hostname = ~p~n", [SR#syslog_packet.hostname])++
 		       .io_lib:format("  tag = ~p~n", [SR#syslog_packet.tag])++
 		       .io_lib:format("  content = ~p~n", [SR#syslog_packet.content])++
-		       "</data>~n"),
-
+		       "</data>~n",[]))),
+	    .file:close(LogFile),
 	    ok;
 	{match, Capture} -> ok;
 	    %.io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin

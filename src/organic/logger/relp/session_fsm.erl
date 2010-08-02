@@ -30,14 +30,9 @@
                }).
 
 -record(relp_packet, {
-	  all_data,
 	  txnr,
 	  command,
-	  datalen,
-	  datalencur,
-	  data,
-	  trailer
-	  }).
+	  data}).
 
 -define(TIMEOUT, 120000).
 

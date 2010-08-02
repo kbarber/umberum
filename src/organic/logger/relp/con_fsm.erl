@@ -33,14 +33,9 @@
                }).
 
 -record(relp_packet, {
-	  all_data,
 	  txnr,
 	  command,
-	  datalen,
-	  datalencur,
-	  data,
-	  trailer
-	  }).
+	  data}).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -103,49 +98,9 @@ init([]) ->
     {next_state, 'WAIT_FOR_SOCKET', State}.
 
 %% Notification event coming from client
-'WAIT_FOR_DATA'({data, Data}, #state{socket=S,session=Session} = State) ->
-    % .io:format("RCV: ~p~n", [binary_to_list(Data)]),
-    %% TODO: regular expressions are probably slow here - need a non -regexp
-    %%       way of doing this.
-    %% TODO: This regexp does not handle partial packets due to the inability of me 
-    %%       to be able to make the last line feed optional, and always be matched if available
-    HeaderRe = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9})\\s?(.*)?(\\n)",
-    ReOpts = [unicode,{capture,all,binary},dotall],
-    case .re:run(Data,HeaderRe,ReOpts) of
-	{match, [AllData, Txnr, Command, DataLen, DataCaptured, Trailer]} -> 
-	    % Lets populate a relp_packet record with the unpacked packet data
-	    PR = #relp_packet{
-	      all_data = AllData,
-	      txnr = binary_to_integer(Txnr),
-	      command = binary_to_atom(Command, latin1),
-	      datalen = binary_to_integer(DataLen),
-	      data = DataCaptured,
-	      datalencur = size(DataCaptured),
-	      trailer = Trailer},
-
-	    % TODO: Ensure datalen matches the size of data. A datalen size that is larger
-	    % then the size of data indicates generally there is more data to come.
-	    % In the opposite case, it indicates the packet is mangled somehow.
-	    case PR#relp_packet.datalen == PR#relp_packet.datalencur of
-		true -> 
-		    .gen_fsm:send_event(Session, {PR#relp_packet.command, PR});
-		false -> 
-		    case PR#relp_packet.datalen > PR#relp_packet.datalencur of
-			true ->
-			    % TODO: We're missing data, switch states so we can receive the rest
-			    ok;
-			false ->
-			    % TODO: We have too much data. There is probably many packets here.
-			    .io:format("TODO: Multiple RELP packets received in one TCP packet. I cannot handle this yet: ~p~n",[Data]),
-			    ok
-		    end,
-		    ok
-	    end;	    
-	{match, Capture} -> ok;
-	    %.io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin
-	nomatch -> ok;
-        Other -> ok
-    end,
+'WAIT_FOR_DATA'({data, Data}, #state{session=Session} = State) ->
+    .io:format("RCV: ~p~n", [binary_to_list(Data)]),
+    process_packet(Data, Session),
     {next_state, 'WAIT_FOR_DATA', State};
 
 'WAIT_FOR_DATA'(Data, State) ->
@@ -192,11 +147,62 @@ handle_info({tcp_closed, Socket}, _StateName,
     .error_logger:info_msg("~p Client ~p disconnected.\n", [self(), Addr]),
     {stop, normal, StateData};
 
-handle_info({EXIT,_,_}, _StateName, StateData) ->
+handle_info({'EXIT',_,_}, _StateName, StateData) ->
     {stop, normal, StateData};
 
 handle_info(_Info, StateName, StateData) ->
     {noreply, StateName, StateData}.
+
+process_packet(RawData, Session) ->
+    HeaderRe = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9})\\s?(.*)?",
+    ReOpts = [unicode,{capture,all,binary},dotall],
+    case .re:run(RawData,HeaderRe,ReOpts) of
+	{match, [_AllData, Txnr, Command, DataLenBin, Data]} -> 
+	    DataLen = binary_to_integer(DataLenBin),
+	    % Lets populate a relp_packet record with the unpacked data
+	    PR = #relp_packet{
+	      txnr = binary_to_integer(Txnr),
+	      command = binary_to_atom(Command, latin1)},
+
+	    % Check to see if the length matches the data size, indicating a single
+	    % RELP packet in this transmission.
+	    case DataLen+1 == size(Data) of
+		true -> 
+		    case .lists:last(binary_to_list(Data)) of
+			10 ->
+			    .gen_fsm:send_event(Session, 
+						{PR#relp_packet.command, 
+						 PR#relp_packet{data=binary_part(Data,DataLen)}
+						});
+			Other ->
+			    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
+		    end;
+		false -> 
+		    case DataLen+1 > size(Data) of
+			true ->
+			    % TODO: We're missing data, switch states so we can receive the rest
+			    .io:format("TODO: size is greater then data section. We cannot handle this case yet."),
+			    ok;
+			false ->
+			    % This packet contains multiple parts. Process the first, and then feed the
+			    % remainder back to this function for more processing.
+			    CurData = binary_part(Data, DataLen+1),
+			    case .lists:last(binary_to_list(CurData)) of
+				10 -> 
+				    .gen_fsm:send_event(Session,
+							{PR#relp_packet.command,
+							 PR#relp_packet{data=binary_part(CurData, DataLen)}
+							}),
+				    Remainder = binary_part(Data, DataLen+2, 999999999),
+				    process_packet(Remainder, Session);
+				Other ->
+				    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
+			    end
+		    end,
+		    ok
+	    end;
+        _Other -> ok
+    end.
 
 %%-------------------------------------------------------------------------
 %% Func: terminate/3
@@ -219,6 +225,21 @@ binary_to_integer(Binary) ->
     %TODO: consider putting this in a shared place
     list_to_integer(binary_to_list(Binary)).
 
+%%-------------------------------------------------------------------------
+%% @doc My own version of binary:part/2 since Ubuntu 10.04 doesn't support 
+%% it
+%% @end
+%%-------------------------------------------------------------------------
+binary_part(Binary, Len) ->
+    binary_part(Binary, 1, Len).
+
+%%-------------------------------------------------------------------------
+%% @doc My own version of binary:part/3 since Ubuntu 10.04 doesn't support 
+%% it
+%% @end
+%%-------------------------------------------------------------------------
+binary_part(Binary, Start, Len) ->
+     list_to_binary(.lists:sublist(binary_to_list(Binary), Start, Len)).
 
 %%-------------------------------------------------------------------------
 %% Func: code_change/4
