@@ -71,8 +71,8 @@ init([Socket]) ->
     case .re:run(Data,HeaderRe,ReOpts) of
 	{match, [_All,Priority,Timestamp,Hostname,Tag,Content]} -> 
 	    SR = #syslog{
-	      facility = binary_to_integer(Priority) div 8,
-	      severity = binary_to_integer(Priority) rem 8,
+	      facility = .organic.util:bin_to_int(Priority) div 8,
+	      severity = .organic.util:bin_to_int(Priority) rem 8,
 	      timestamp = binary_to_list(Timestamp),
 	      hostname = binary_to_list(Hostname),
 	      tag = binary_to_list(Tag),
@@ -129,6 +129,17 @@ handle_sync_event(Event, _From, StateName, StateData) ->
 %%          {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
+handle_info({'EXIT',From,_}, StateName, #state{route=Route} = StateData) -> 
+    % This is how we receive signals from the route process when it stops
+    % In this case, we just stop as well.
+    case From of
+	Route ->
+	    {ok, RoutePid} = .organic.logger.route.sup:start_client(self()),
+	    link(RoutePid),
+	    {next_state, StateName, #state{route=Route}};
+	_Other -> 
+	    {stop, normal, StateData}
+    end;
 handle_info({'EXIT',_,_}, _StateName, StateData) -> 
     % This is how we receive signals from the route process when it stops
     % In this case, we just stop as well.
@@ -144,17 +155,6 @@ handle_info(_Info, StateName, StateData) ->
 %%-------------------------------------------------------------------------
 terminate(_Reason, _StateName, _StateData) ->
     ok.
-
-%%-------------------------------------------------------------------------
-%% Func: binary_to_integer/1
-%% Purpose: Translate binary to integer
-%% Returns: integer()
-%% @private
-%%-------------------------------------------------------------------------
-binary_to_integer(Binary) ->
-    %TODO: find a built-in way of doing this
-    %TODO: consider putting this in a shared place
-    list_to_integer(binary_to_list(Binary)).
 
 %%-------------------------------------------------------------------------
 %% Func: code_change/4

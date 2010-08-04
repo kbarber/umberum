@@ -1,8 +1,6 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc This process is for routing decoded messages to
-%% a suitable output mechanism such as storage or another
-%% syslog server.
+%% @doc This process is output data to a file.
 %%
 %% @end
 %% --------------------------

@@ -155,10 +155,10 @@ process_packet(RawData, Session) ->
     ReOpts = [unicode,{capture,all,binary},dotall],
     case .re:run(RawData,HeaderRe,ReOpts) of
 	{match, [_AllData, Txnr, Command, DataLenBin, Data]} -> 
-	    DataLen = binary_to_integer(DataLenBin),
+	    DataLen = .organic.util:bin_to_int(DataLenBin),
 	    % Lets populate a relp_packet record with the unpacked data
 	    PR = #relp{
-	      txnr = binary_to_integer(Txnr),
+	      txnr = .organic.util:bin_to_int(Txnr),
 	      command = binary_to_atom(Command, latin1)},
 
 	    % Check to see if the length matches the data size, indicating a single
@@ -169,7 +169,7 @@ process_packet(RawData, Session) ->
 			10 ->
 			    .gen_fsm:send_event(Session, 
 						{PR#relp.command, 
-						 PR#relp{data=binary_part(Data,DataLen)}
+						 PR#relp{data=.organic.util:bin_part(Data,DataLen)}
 						});
 			Other ->
 			    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
@@ -183,14 +183,14 @@ process_packet(RawData, Session) ->
 			false ->
 			    % This packet contains multiple parts. Process the first, and then feed the
 			    % remainder back to this function for more processing.
-			    CurData = binary_part(Data, DataLen+1),
+			    CurData = .organic.util:bin_part(Data, DataLen+1),
 			    case .lists:last(binary_to_list(CurData)) of
 				10 -> 
 				    .gen_fsm:send_event(Session,
 							{PR#relp.command,
-							 PR#relp{data=binary_part(CurData, DataLen)}
+							 PR#relp{data=.organic.util:bin_part(CurData, DataLen)}
 							}),
-				    Remainder = binary_part(Data, DataLen+2, 999999999),
+				    Remainder = .organic.util:bin_part(Data, DataLen+2, 999999999),
 				    process_packet(Remainder, Session);
 				Other ->
 				    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
@@ -210,33 +210,6 @@ process_packet(RawData, Session) ->
 terminate(_Reason, _StateName, #state{socket=Socket}) ->
     (catch .gen_tcp:close(Socket)),
     ok.
-
-%%-------------------------------------------------------------------------
-%% Func: binary_to_integer/1
-%% Purpose: Translate binary to integer
-%% Returns: integer()
-%% @private
-%%-------------------------------------------------------------------------
-binary_to_integer(Binary) ->
-    %TODO: find a built-in way of doing this
-    %TODO: consider putting this in a shared place
-    list_to_integer(binary_to_list(Binary)).
-
-%%-------------------------------------------------------------------------
-%% @doc My own version of binary:part/2 since Ubuntu 10.04 doesn't support 
-%% it
-%% @end
-%%-------------------------------------------------------------------------
-binary_part(Binary, Len) ->
-    binary_part(Binary, 1, Len).
-
-%%-------------------------------------------------------------------------
-%% @doc My own version of binary:part/3 since Ubuntu 10.04 doesn't support 
-%% it
-%% @end
-%%-------------------------------------------------------------------------
-binary_part(Binary, Start, Len) ->
-     list_to_binary(.lists:sublist(binary_to_list(Binary), Start, Len)).
 
 %%-------------------------------------------------------------------------
 %% Func: code_change/4
