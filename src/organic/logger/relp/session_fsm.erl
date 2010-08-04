@@ -10,6 +10,8 @@
 
 -behaviour(gen_fsm).
 
+-include_lib("include/data.hrl").
+
 -export([start_link/1]).
 
 %% gen_fsm callbacks
@@ -27,11 +29,6 @@
                 addr,      % client address
 	        syslog     % syslog process
                }).
-
--record(relp_packet, {
-	  txnr,
-	  command,
-	  data}).
 
 -define(TIMEOUT, 120000).
 
@@ -69,7 +66,7 @@ init([Socket]) ->
 %%
 %% @end
 %% --------------------------
-'SESSION_STARTUP'({open, #relp_packet{txnr=Txnr}}, #state{socket=S})->
+'SESSION_STARTUP'({open, #relp{txnr=Txnr}}, #state{socket=S})->
     Response = .lists:flatten(.io_lib:format("~p rsp 92 200 OK~nrelp_version=0~nrelp_software=librelp,1.0.0,http://librelp.adiscon.com~ncommands=syslog~n", 
     			      [Txnr])),
     %.io:format("SEND: ~p~n", [Response]),
@@ -77,7 +74,7 @@ init([Socket]) ->
     {ok, SyslogPid} = .organic.logger.syslog_3164.decode_sup:start_client(S),
     link(SyslogPid),
     {next_state, 'SESSION_TRANSMISSION', #state{socket=S,syslog=SyslogPid}};
-'SESSION_STARTUP'({close, #relp_packet{txnr=Txnr}}, #state{socket=S} = State)->
+'SESSION_STARTUP'({close, #relp{txnr=Txnr}}, #state{socket=S} = State)->
     Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
     .io:format("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
@@ -98,13 +95,13 @@ init([Socket]) ->
 %%
 %% @end
 %% --------------------------
-'SESSION_TRANSMISSION'({syslog, #relp_packet{data=Data, txnr=Txnr}}, #state{socket=S,syslog=Syslog} = State)->
+'SESSION_TRANSMISSION'({syslog, #relp{data=Data, txnr=Txnr}}, #state{socket=S,syslog=Syslog} = State)->
     .gen_fsm:send_event(Syslog, {msg, Data}),
     Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
     %.io:format("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {next_state, 'SESSION_TRANSMISSION', State};
-'SESSION_TRANSMISSION'({close, #relp_packet{txnr=Txnr}}, #state{socket=S} = State) ->
+'SESSION_TRANSMISSION'({close, #relp{txnr=Txnr}}, #state{socket=S} = State) ->
     Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
     %.io:format("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),

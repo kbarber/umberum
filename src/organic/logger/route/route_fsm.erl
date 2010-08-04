@@ -8,6 +8,8 @@
 
 -module(.organic.logger.route.route_fsm).
 
+-include_lib("include/data.hrl").
+
 -behaviour(gen_fsm).
 
 -export([start_link/1]).
@@ -24,15 +26,6 @@
 -record(state, {
                 source_proc
                }).
-
-%-record(log, {
-%	  facility,
-%	  severity,
-%	  timestamp,
-%	  hostname,
-%	  tag,
-%	  content
-%	  }).
 
 %%%------------------------------------------------------------------------
 %%% API

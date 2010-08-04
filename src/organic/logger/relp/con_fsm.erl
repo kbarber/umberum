@@ -14,6 +14,8 @@
 
 -behaviour(gen_fsm).
 
+-include_lib("include/data.hrl").
+
 -export([start_link/0, set_socket/2]).
 
 %% gen_fsm callbacks
@@ -31,11 +33,6 @@
                 addr,      % client address
 	        session    % session pid
                }).
-
--record(relp_packet, {
-	  txnr,
-	  command,
-	  data}).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -160,7 +157,7 @@ process_packet(RawData, Session) ->
 	{match, [_AllData, Txnr, Command, DataLenBin, Data]} -> 
 	    DataLen = binary_to_integer(DataLenBin),
 	    % Lets populate a relp_packet record with the unpacked data
-	    PR = #relp_packet{
+	    PR = #relp{
 	      txnr = binary_to_integer(Txnr),
 	      command = binary_to_atom(Command, latin1)},
 
@@ -171,8 +168,8 @@ process_packet(RawData, Session) ->
 		    case .lists:last(binary_to_list(Data)) of
 			10 ->
 			    .gen_fsm:send_event(Session, 
-						{PR#relp_packet.command, 
-						 PR#relp_packet{data=binary_part(Data,DataLen)}
+						{PR#relp.command, 
+						 PR#relp{data=binary_part(Data,DataLen)}
 						});
 			Other ->
 			    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
@@ -190,8 +187,8 @@ process_packet(RawData, Session) ->
 			    case .lists:last(binary_to_list(CurData)) of
 				10 -> 
 				    .gen_fsm:send_event(Session,
-							{PR#relp_packet.command,
-							 PR#relp_packet{data=binary_part(CurData, DataLen)}
+							{PR#relp.command,
+							 PR#relp{data=binary_part(CurData, DataLen)}
 							}),
 				    Remainder = binary_part(Data, DataLen+2, 999999999),
 				    process_packet(Remainder, Session);

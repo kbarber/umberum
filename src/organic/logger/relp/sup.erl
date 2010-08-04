@@ -9,8 +9,6 @@
 
 -behaviour(supervisor).
 
-
-
 %% Supervisor callbacks
 -export([start_link/0, stop/1, init/1]).
 

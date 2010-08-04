@@ -10,6 +10,8 @@
 
 -behaviour(gen_fsm).
 
+-include_lib("include/data.hrl").
+
 -export([start_link/1]).
 
 %% gen_fsm callbacks
@@ -26,15 +28,6 @@
                 addr,       % client address
 	        route      % route pid
                }).
-
--record(syslog_packet, {
-	  facility,
-	  severity,
-	  timestamp,
-	  hostname,
-	  tag,
-	  content
-	  }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -77,7 +70,7 @@ init([Socket]) ->
     ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
     case .re:run(Data,HeaderRe,ReOpts) of
 	{match, [_All,Priority,Timestamp,Hostname,Tag,Content]} -> 
-	    SR = #syslog_packet{
+	    SR = #syslog{
 	      facility = binary_to_integer(Priority) div 8,
 	      severity = binary_to_integer(Priority) rem 8,
 	      timestamp = binary_to_list(Timestamp),
@@ -88,17 +81,16 @@ init([Socket]) ->
 	    % TODO: logging to one file isn't that useful
 	    {ok,LogFile} = .file:open("/tmp/log", [ write, append]),
 	    .file:write(LogFile, list_to_binary(.io_lib:format("<data>~n"++
-		       .io_lib:format("  facility = ~p~n", [SR#syslog_packet.facility])++
-		       .io_lib:format("  severity = ~p~n", [SR#syslog_packet.severity])++
-		       .io_lib:format("  timestamp = ~p~n", [SR#syslog_packet.timestamp])++
-		       .io_lib:format("  hostname = ~p~n", [SR#syslog_packet.hostname])++
-		       .io_lib:format("  tag = ~p~n", [SR#syslog_packet.tag])++
-		       .io_lib:format("  content = ~p~n", [SR#syslog_packet.content])++
+		       .io_lib:format("  facility = ~p~n", [SR#syslog.facility])++
+		       .io_lib:format("  severity = ~p~n", [SR#syslog.severity])++
+		       .io_lib:format("  timestamp = ~p~n", [SR#syslog.timestamp])++
+		       .io_lib:format("  hostname = ~p~n", [SR#syslog.hostname])++
+		       .io_lib:format("  tag = ~p~n", [SR#syslog.tag])++
+		       .io_lib:format("  content = ~p~n", [SR#syslog.content])++
 		       "</data>~n",[]))),
 	    .file:close(LogFile),
 	    ok;
-	{match, _Capture} -> ok;
-	    %.io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin
+	{match, _Capture} -> ok; %TODO:proper loggin
 	nomatch -> ok;
         _Other -> ok
     end,
