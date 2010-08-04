@@ -18,13 +18,29 @@ init(_Args) ->
     {ok,
         {_SupFlags = {one_for_one, 10, 1},
             [
-              % TCP Listener
+              % RELP Listener
               {   .organic.logger.relp.sup,           % Id       = internal id
                   {.organic.logger.relp.sup,start_link,[]}, % StartFun = {M, F, A}
                   permanent,                               % Restart  = permanent | transient | temporary
                   infinity,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                                  % Type     = worker | supervisor
                   [.organic.logger.relp.sup]          % Modules  = [Module] | dynamic
+              },
+              % Syslog supervisor
+              {   organic.logger.syslog_3164.decode_sup,
+                  {.organic.logger.syslog_3164.decode_sup,start_link,[]},
+                  permanent,                               % Restart  = permanent | transient | temporary
+                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
+                  supervisor,                              % Type     = worker | supervisor
+                  []                                       % Modules  = [Module] | dynamic
+              },
+              % Route supervisor
+              {   organic.logger.route.sup,
+                  {.organic.logger.route.sup,start_link,[]},
+                  permanent,                               % Restart  = permanent | transient | temporary
+                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
+                  supervisor,                              % Type     = worker | supervisor
+                  []                                       % Modules  = [Module] | dynamic
               }
             ]
          }

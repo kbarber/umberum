@@ -6,7 +6,6 @@
 %% --------------------------
 
 -module(.organic.logger.relp.sup).
--author('saleyn@gmail.com').
 
 -behaviour(supervisor).
 
@@ -15,6 +14,7 @@
 %% Supervisor callbacks
 -export([start_link/0, stop/1, init/1]).
 
+% TODO: some of this belongs in a configuration file
 -define(MAX_RESTART,    5).
 -define(MAX_TIME,      60).
 -define(DEF_PORT,    2222).
@@ -31,8 +31,7 @@
 %% @end
 %% --------------------------
 start_link() ->
-    ListenPort = get_app_env(listen_port, ?DEF_PORT),
-    .supervisor:start_link({local, ?MODULE}, ?MODULE, [ListenPort, .organic.logger.relp.con_fsm]).
+    .supervisor:start_link({local, ?MODULE}, ?MODULE, [?DEF_PORT, .organic.logger.relp.con_fsm]).
 
 %% --------------------------
 %% @doc 
@@ -74,36 +73,7 @@ init([Port, Module]) ->
                   infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                              % Type     = worker | supervisor
                   []                                       % Modules  = [Module] | dynamic
-              },
-              % Syslog supervisor
-              {   organic.logger.relp.syslog_sup,
-                  {supervisor,start_link,[{local, organic.logger.relp.syslog_sup}, .organic.logger.relp.syslog_sup, []]},
-                  permanent,                               % Restart  = permanent | transient | temporary
-                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
-                  supervisor,                              % Type     = worker | supervisor
-                  []                                       % Modules  = [Module] | dynamic
               }
             ]
         }
     }.
-
-%%----------------------------------------------------------------------
-%% Internal functions
-%%----------------------------------------------------------------------
-
-%% --------------------------
-%% @doc 
-%%
-%% @end
-%% TODO: Decide if this is needed. There is probably a better way to define config
-%% TODO: Consider placing this generic function into a shared area of code
-%% --------------------------
-get_app_env(Opt, Default) ->
-    case .application:get_env(.application:get_application(), Opt) of
-    {ok, Val} -> Val;
-    _ ->
-        case .init:get_argument(Opt) of
-        [[Val | _]] -> Val;
-        error       -> Default
-        end
-    end.

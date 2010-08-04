@@ -1,12 +1,12 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc This is a state based session handler for the RELP protocol
+%% @doc This process is for routing decoded messages
 %%
 %% @end
 %% --------------------------
 % 
 
--module(.organic.logger.relp.session_fsm).
+-module(.organic.logger.route.route_fsm).
 
 -behaviour(gen_fsm).
 
@@ -18,22 +18,21 @@
 
 %% FSM States
 -export([
-    'SESSION_STARTUP'/2,
-    'SESSION_TRANSMISSION'/2
+    'RECEIVE'/2
 ]).
 
 -record(state, {
-                socket,    % client socket
-                addr,      % client address
-	        syslog     % syslog process
+                source_proc
                }).
 
--record(relp_packet, {
-	  txnr,
-	  command,
-	  data}).
-
--define(TIMEOUT, 120000).
+%-record(log, {
+%	  facility,
+%	  severity,
+%	  timestamp,
+%	  hostname,
+%	  tag,
+%	  content
+%	  }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -42,14 +41,10 @@
 %%-------------------------------------------------------------------------
 %% @spec (Socket) -> {ok,Pid} | ignore | {error,Error}
 %% @doc To be called by the supervisor in order to start the server.
-%%      If init/1 fails with Reason, the function returns {error,Reason}.
-%%      If init/1 returns {stop,Reason} or ignore, the process is
-%%      terminated and the function returns {error,Reason} or ignore,
-%%      respectively.
 %% @end
 %%-------------------------------------------------------------------------
-start_link(Socket) ->
-    .gen_fsm:start_link(?MODULE, [Socket], []).
+start_link(SourceProc) ->
+    .gen_fsm:start_link(?MODULE, [SourceProc], []).
 
 %%%------------------------------------------------------------------------
 %%% Callback functions from gen_server
@@ -60,58 +55,19 @@ start_link(Socket) ->
 %%
 %% @end
 %% --------------------------
-init([Socket]) ->
+init([SourceProc]) ->
     .process_flag(trap_exit, true),
-    {ok, 'SESSION_STARTUP', #state{socket=Socket}, ?TIMEOUT}.
+    {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
 
 %% --------------------------
 %% @doc 
 %%
 %% @end
 %% --------------------------
-'SESSION_STARTUP'({open, #relp_packet{txnr=Txnr}}, #state{socket=S})->
-    Response = .lists:flatten(.io_lib:format("~p rsp 92 200 OK~nrelp_version=0~nrelp_software=librelp,1.0.0,http://librelp.adiscon.com~ncommands=syslog~n", 
-    			      [Txnr])),
-    %.io:format("SEND: ~p~n", [Response]),
-    .gen_tcp:send(S, Response),
-    {ok, SyslogPid} = .organic.logger.syslog_3164.decode_sup:start_client(S),
-    link(SyslogPid),
-    {next_state, 'SESSION_TRANSMISSION', #state{socket=S,syslog=SyslogPid}};
-'SESSION_STARTUP'({close, #relp_packet{txnr=Txnr}}, #state{socket=S} = State)->
-    Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
-    .io:format("SEND: ~p~n",[Response]),
-    .gen_tcp:send(S, Response),
-    {stop, normal, State};
-'SESSION_STARTUP'({_Command, _PR}, State)->
-    % TODO: this indicates an unknown command. Should be logged at some level perhaps?
-    {stop, normal, State};
-'SESSION_STARTUP'(timeout, #state{socket=S} = State) ->
-    Response = "0 serverclose 0~n",
-    .io:format("SEND: ~p ~n", [Response]),
-    .gen_tcp:send(S, Response),
-    {stop, normal, State};
-'SESSION_STARTUP'(_Other,State) ->
-    {stop, normal, State}.
-
-%% --------------------------
-%% @doc 
-%%
-%% @end
-%% --------------------------
-'SESSION_TRANSMISSION'({syslog, #relp_packet{data=Data, txnr=Txnr}}, #state{socket=S,syslog=Syslog} = State)->
-    .gen_fsm:send_event(Syslog, {msg, Data}),
-    Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
-    %.io:format("SEND: ~p~n",[Response]),
-    .gen_tcp:send(S, Response),
-    {next_state, 'SESSION_TRANSMISSION', State};
-'SESSION_TRANSMISSION'({close, #relp_packet{txnr=Txnr}}, #state{socket=S} = State) ->
-    Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
-    %.io:format("SEND: ~p~n",[Response]),
-    .gen_tcp:send(S, Response),
-    {stop, normal, State};
-'SESSION_TRANSMISSION'(_Other, State) ->
-    {next_state, 'SESSION_TRANSMISSION', State}.
-
+'RECEIVE'({log, _Log}, State)->
+    {next_state, 'RECEIVE', State};
+'RECEIVE'(_Msg,State) ->
+    {next_state, 'RECEIVE', State}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_event/3
@@ -143,17 +99,10 @@ handle_sync_event(Event, _From, StateName, StateData) ->
 %%          {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
-handle_info({'EXIT',From,_}, StateName, #state{socket=Socket,syslog=Syslog} = StateData) -> 
+handle_info({'EXIT',_,_}, _StateName, StateData) -> 
     % This is how we receive signals from the connection process when it stops
     % In this case, we just stop as well.
-    case From of
-	Syslog ->
-	    {ok, SyslogPid} = .organic.logger.relp.syslog_sup:start_client(Socket),
-	    link(SyslogPid),
-	    {next_state, StateName, #state{socket=Socket,syslog=SyslogPid}};
-	_Other -> 
-	    {stop, normal, StateData}
-    end;
+    {stop, normal, StateData};
 handle_info(_Info, StateName, StateData) ->
     {noreply, StateName, StateData}.
 

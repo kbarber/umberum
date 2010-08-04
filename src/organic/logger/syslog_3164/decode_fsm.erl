@@ -3,11 +3,10 @@
 %% @doc This processes RFC3164 BSD syslog messages
 %%
 %% @end
-%% TODO: this belongs in its own directory not under relp. Something like bsd_syslog.
 %% --------------------------
 % 
 
--module(.organic.logger.relp.syslog_fsm).
+-module(.organic.logger.syslog_3164.decode_fsm).
 
 -behaviour(gen_fsm).
 
@@ -24,7 +23,8 @@
 
 -record(state, {
                 socket,    % client socket
-                addr       % client address
+                addr,       % client address
+	        route      % route pid
                }).
 
 -record(syslog_packet, {
@@ -63,14 +63,16 @@ start_link(Socket) ->
 %% --------------------------
 init([Socket]) ->
     .process_flag(trap_exit, true),
-    {ok, 'RECEIVE', #state{socket=Socket}}.
+    {ok, RoutePid} = .organic.logger.route.sup:start_client(self()),
+    link(RoutePid),
+    {ok, 'RECEIVE', #state{socket=Socket, route=RoutePid}}.
 
 %% --------------------------
 %% @doc 
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({msg, Data}, #state{socket=S} = State)->
+'RECEIVE'({msg, Data}, State)->
     HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+):\\s(.*?)",
     ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
     case .re:run(Data,HeaderRe,ReOpts) of
@@ -95,14 +97,14 @@ init([Socket]) ->
 		       "</data>~n",[]))),
 	    .file:close(LogFile),
 	    ok;
-	{match, Capture} -> ok;
+	{match, _Capture} -> ok;
 	    %.io:format("Fell through match~p~n", [Capture]); %TODO:proper loggin
 	nomatch -> ok;
-        Other -> ok
+        _Other -> ok
     end,
     %.io:format("DATA: ~p~n", [Data]),
     {next_state, 'RECEIVE', State};
-'RECEIVE'(Msg,State) ->
+'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.
 
 %%-------------------------------------------------------------------------
@@ -135,8 +137,8 @@ handle_sync_event(Event, _From, StateName, StateData) ->
 %%          {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
-handle_info({EXIT,_,_}, StateName, StateData) -> 
-    % This is how we receive signals from the connection process when it stops
+handle_info({'EXIT',_,_}, _StateName, StateData) -> 
+    % This is how we receive signals from the route process when it stops
     % In this case, we just stop as well.
     {stop, normal, StateData};
 handle_info(_Info, StateName, StateData) ->
@@ -148,7 +150,7 @@ handle_info(_Info, StateName, StateData) ->
 %% Returns: any
 %% @private
 %%-------------------------------------------------------------------------
-terminate(_Reason, _StateName, #state{socket=Socket}) ->
+terminate(_Reason, _StateName, _StateData) ->
     ok.
 
 %%-------------------------------------------------------------------------

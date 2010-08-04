@@ -1,15 +1,14 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc RELP syslog process supervisor
+%% @doc Route supervisor
 %% 
 %% @end
 %% --------------------------
 
--module(.organic.logger.relp.syslog_sup).
+-module(.organic.logger.route.sup).
 
 -behaviour(supervisor).
 
-%% Internal API
 -export([start_client/1]).
 
 %% Supervisor callbacks
@@ -23,8 +22,8 @@
 %% To be called by its session_fsm process.
 %% @end
 %% --------------------------
-start_client(Socket) ->
-    .supervisor:start_child(organic.logger.relp.syslog_sup, [Socket]).
+start_client(SourceProc) ->
+    .supervisor:start_child(organic.logger.route.sup, [SourceProc]).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks
@@ -36,7 +35,7 @@ start_client(Socket) ->
 %% @end
 %% --------------------------
 start_link() ->
-    .supervisor:start_link({local, ?MODULE}, ?MODULE, [.organic.logger.relp.syslog_fsm]).
+    .supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% --------------------------
 %% @doc 
@@ -57,7 +56,7 @@ init([]) ->
             [
               % TCP Client
               {   undefined,                               % Id       = internal id
-                  {.organic.logger.relp.syslog_fsm,start_link,[]},                  % StartFun = {M, F, A}
+                  {.organic.logger.route.route_fsm,start_link,[]},                  % StartFun = {M, F, A}
                   temporary,                               % Restart  = permanent | transient | temporary
                   2000,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
                   worker,                                  % Type     = worker | supervisor
