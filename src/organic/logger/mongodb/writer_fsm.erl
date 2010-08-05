@@ -57,7 +57,16 @@ init([SourceProc]) ->
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({write, _SR}, State)->
+'RECEIVE'({write, SR}, State)->
+    LogEntry = [
+        {"facility",SR#syslog.facility},
+        {"severity",SR#syslog.severity},
+        {"timestamp",SR#syslog.timestamp},
+        {"hostname",SR#syslog.hostname},
+        {"tag",SR#syslog.tag},
+        {"content",SR#syslog.content}
+    ],
+    .emongo:insert(emongo_pool, "log", LogEntry),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.
