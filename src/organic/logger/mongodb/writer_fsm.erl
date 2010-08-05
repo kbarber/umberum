@@ -1,14 +1,12 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc This process is for routing decoded messages to
-%% a suitable output mechanism such as storage or another
-%% syslog server.
+%% @doc This process is for outputting data to mongodb.
 %%
 %% @end
 %% --------------------------
 % 
 
--module(.organic.logger.route.route_fsm).
+-module(.organic.logger.mongodb.writer_fsm).
 
 -include_lib("include/data.hrl").
 
@@ -26,10 +24,8 @@
 ]).
 
 -record(state, {
-	  source_proc,
-	  writer,
-	  mongodb_writer
-	 }).
+                source_proc
+               }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -54,22 +50,14 @@ start_link(SourceProc) ->
 %% --------------------------
 init([SourceProc]) ->
     .process_flag(trap_exit, true),
-    {ok, Writer} = .organic.logger.file.writer_sup:start_client(self()),
-    link(Writer),
-
-    {ok, MongoWriter} = .organic.logger.mongodb.writer_sup:start_client(self()),
-    link(MongoWriter),
-
-    {ok, 'RECEIVE', #state{source_proc=SourceProc, writer=Writer, mongodb_writer=MongoWriter}}.
+    {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
 
 %% --------------------------
 %% @doc 
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({log, SR}, #state{writer=Writer, mongodb_writer=MongoWriter} = State)->
-    .gen_fsm:send_event(Writer, {write, SR}),
-    .gen_fsm:send_event(MongoWriter, {write, SR}),
+'RECEIVE'({write, _SR}, State)->
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.

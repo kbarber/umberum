@@ -5,3 +5,4 @@
 {'src/organic/logger/syslog_3164/*',[debug_info,{outdir,"ebin/organic/logger/syslog_3164"},{i,'include'}]}.
 {'src/organic/logger/route/*',[debug_info,{outdir,"ebin/organic/logger/route"},{i,'include'}]}.
 {'src/organic/logger/file/*',[debug_info,{outdir,"ebin/organic/logger/file"},{i,'include'}]}.
+{'src/organic/logger/mongodb/*',[debug_info,{outdir,"ebin/organic/logger/mongodb"},{i,'include'}]}.

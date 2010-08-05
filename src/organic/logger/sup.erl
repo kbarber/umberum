@@ -49,6 +49,14 @@ init(_Args) ->
                   infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                              % Type     = worker | supervisor
                   []                                       % Modules  = [Module] | dynamic
+              },
+	      % Mongodb writer
+              {   organic.logger.mongodb.writer_sup,
+                  {.organic.logger.mongodb.writer_sup,start_link,[]},
+                  permanent,                               % Restart  = permanent | transient | temporary
+                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
+                  supervisor,                              % Type     = worker | supervisor
+                  []                                       % Modules  = [Module] | dynamic
               }
             ]
          }
