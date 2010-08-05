@@ -96,7 +96,7 @@ init([]) ->
 
 %% Notification event coming from client
 'WAIT_FOR_DATA'({data, Data}, #state{session=Session} = State) ->
-    .io:format("RCV: ~p~n", [binary_to_list(Data)]),
+    %.io:format("RCV: ~p~n", [binary_to_list(Data)]),
     process_packet(Data, Session),
     {next_state, 'WAIT_FOR_DATA', State};
 

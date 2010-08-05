@@ -3,20 +3,26 @@ About
 
 A syslog receiver.
 
-Instructions
+Installation
 ------------
+
+Prerequisites:
+- erlang R13B (kernel,stdlib,sasl)
+- emongo 0.0.6: http://bitbucket.org/japerk/emongo/
+- mongodb 1.2.2
 
 Build:
 
   ./build.sh
 
+Clean:
+
+ ./clean
+
 Run:
 
  ./run.sh
 
-Clean:
-
- ./clean
 
 Todo
 ----
@@ -48,4 +54,5 @@ reasonable stage of development this is good enough for now.
 * Structure based on how extensible bits will be written: For now I'm creating a
   supervisor for each component regardless of its architectural responsibility. 
   In the future we may want to split things into: in, processing and out. Think:
-  what bits are pluggable and what is the easiest way to modularise.
+  what bits are pluggable and what is the easiest way to modularise. We also need
+  to be mindful of potentially running different process types on different boxes.
