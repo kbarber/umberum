@@ -5,5 +5,5 @@
   {stdlib, "1.16.4"},
   {sasl, "2.1.8"},
   {organic.logger, "1"},
-  {emongo, "0.2"}]
+  {emongo, "0.0.6"}]
 }.
