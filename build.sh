@@ -16,6 +16,6 @@ my_mkdir ebin/organic/logger/mongodb
 erl -make
 
 cd ebin/
-erlc -I. organic.logger-1.rel
+erlc -pz ../../emongo/ebin -I. organic.logger-1.rel
 
 #erl -s systools make_script organic.logger-1 -s erlang halt

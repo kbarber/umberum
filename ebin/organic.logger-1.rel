@@ -4,5 +4,6 @@
  [{kernel, "2.13.4"},
   {stdlib, "1.16.4"},
   {sasl, "2.1.8"},
-  {organic.logger, "1"}]
+  {organic.logger, "1"},
+  {emongo, "0.2"}]
 }.
