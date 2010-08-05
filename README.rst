@@ -1,15 +1,19 @@
 About
 =====
 
-A syslog receiver.
+A RELP protocol syslog receiver that writes out to a log file and MongoDB.
 
 Installation
 ============
 
-Prerequisites:
+Prerequisites
+-------------
 * erlang R13B (kernel,stdlib,sasl)
 * emongo 0.0.6: http://bitbucket.org/japerk/emongo/
 * mongodb 1.2.2
+
+Compilation
+-----------
 
 Build::
 
@@ -18,6 +22,9 @@ Build::
 Clean::
 
   ./clean
+
+Execution
+---------
 
 Run::
 
@@ -38,17 +45,17 @@ reasonable stage of development this is good enough for now.
   of the cost of starting processes but it feel more 'right' to have
   a pool of workers ready to act that aren't bound to a single requester
   process. Examples are:
-  - organic.logger.syslog_3164.decode_fsm
-  - organic.logger.route.route_fsm.erl
+   - organic.logger.syslog_3164.decode_fsm
+   - organic.logger.route.route_fsm.erl
   I think process groups (using pg2) is the way to go, using a supervisor
   to restart broken processes and keeping a constant number of pooled 
   processes. Of course, how does this pool scale under different load one asks ...
 
 * Common place for configuration: I envision lots of configuration. Here is some
   that we could use now:
-  - RELP listener port
-  - connection timeout
-  - output file name
+   - RELP listener port
+   - connection timeout
+   - output file name
   Configuration is a hairy beast - so I'm happy to wait before fixing this one. 
   I'd like more use cases to understand the best direction.
 
