@@ -41,6 +41,14 @@ init(_Args) ->
                   infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                              % Type     = worker | supervisor
                   []                                       % Modules  = [Module] | dynamic
+              },
+	      % File writer
+              {   organic.logger.file.writer_sup,
+                  {.organic.logger.file.writer_sup,start_link,[]},
+                  permanent,                               % Restart  = permanent | transient | temporary
+                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
+                  supervisor,                              % Type     = worker | supervisor
+                  []                                       % Modules  = [Module] | dynamic
               }
             ]
          }

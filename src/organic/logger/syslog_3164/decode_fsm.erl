@@ -26,7 +26,7 @@
 -record(state, {
                 socket,    % client socket
                 addr,       % client address
-	        route      % route pid
+	        router      % route pid
                }).
 
 %%%------------------------------------------------------------------------
@@ -56,16 +56,16 @@ start_link(Socket) ->
 %% --------------------------
 init([Socket]) ->
     .process_flag(trap_exit, true),
-    {ok, RoutePid} = .organic.logger.route.sup:start_client(self()),
+    {ok, RoutePid} = .organic.logger.route.sup:start_client(self()), % borked
     link(RoutePid),
-    {ok, 'RECEIVE', #state{socket=Socket, route=RoutePid}}.
+    {ok, 'RECEIVE', #state{socket=Socket, router=RoutePid}}.
 
 %% --------------------------
 %% @doc 
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({msg, Data}, State)->
+'RECEIVE'({msg, Data}, #state{router=Router} = State)->
     HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+):\\s(.*?)",
     ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
     case .re:run(Data,HeaderRe,ReOpts) of
@@ -78,17 +78,7 @@ init([Socket]) ->
 	      tag = binary_to_list(Tag),
 	      content = Content},
 
-	    % TODO: logging to one file isn't that useful
-	    {ok,LogFile} = .file:open("/tmp/log", [ write, append]),
-	    .file:write(LogFile, list_to_binary(.io_lib:format("<data>~n"++
-		       .io_lib:format("  facility = ~p~n", [SR#syslog.facility])++
-		       .io_lib:format("  severity = ~p~n", [SR#syslog.severity])++
-		       .io_lib:format("  timestamp = ~p~n", [SR#syslog.timestamp])++
-		       .io_lib:format("  hostname = ~p~n", [SR#syslog.hostname])++
-		       .io_lib:format("  tag = ~p~n", [SR#syslog.tag])++
-		       .io_lib:format("  content = ~p~n", [SR#syslog.content])++
-		       "</data>~n",[]))),
-	    .file:close(LogFile),
+	    .gen_fsm:send_event(Router, {log, SR}),
 	    ok;
 	{match, _Capture} -> ok; %TODO:proper loggin
 	nomatch -> ok;
@@ -129,14 +119,14 @@ handle_sync_event(Event, _From, StateName, StateData) ->
 %%          {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
-handle_info({'EXIT',From,_}, StateName, #state{route=Route} = StateData) -> 
+handle_info({'EXIT',From,_}, StateName, #state{router=Router} = StateData) -> 
     % This is how we receive signals from the route process when it stops
     % In this case, we just stop as well.
     case From of
-	Route ->
-	    {ok, RoutePid} = .organic.logger.route.sup:start_client(self()),
-	    link(RoutePid),
-	    {next_state, StateName, #state{route=Route}};
+	Router ->
+	    {ok, RouterPid} = .organic.logger.route.sup:start_client(self()),
+	    link(RouterPid),
+	    {next_state, StateName, #state{router=RouterPid}};
 	_Other -> 
 	    {stop, normal, StateData}
     end;

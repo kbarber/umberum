@@ -10,6 +10,7 @@ function my_mkdir() {
 my_mkdir ebin/organic/logger/relp
 my_mkdir ebin/organic/logger/syslog_3164
 my_mkdir ebin/organic/logger/route
+my_mkdir ebin/organic/logger/file
 
 erl -make
 

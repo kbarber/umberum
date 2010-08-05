@@ -23,7 +23,7 @@
 %% @end
 %% --------------------------
 start_client(Router) ->
-    .supervisor:start_child(organic.logger.writer_sup, [Router]).
+    .supervisor:start_child(organic.logger.file.writer_sup, [Router]).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks

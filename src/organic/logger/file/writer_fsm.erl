@@ -1,12 +1,12 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc This process is output data to a file.
+%% @doc This process is for outputting data to a file.
 %%
 %% @end
 %% --------------------------
 % 
 
--module(.organic.logger.route.route_fsm).
+-module(.organic.logger.file.writer_fsm).
 
 -include_lib("include/data.hrl").
 
@@ -57,7 +57,18 @@ init([SourceProc]) ->
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({log, _Log}, State)->
+'RECEIVE'({write, SR}, State)->
+    % TODO: logging to one file isn't that useful
+    {ok,LogFile} = .file:open("/tmp/log", [ write, append]),
+    .file:write(LogFile, list_to_binary(.io_lib:format("<data>~n"++
+	       .io_lib:format("  facility = ~p~n", [SR#syslog.facility])++
+	       .io_lib:format("  severity = ~p~n", [SR#syslog.severity])++
+	       .io_lib:format("  timestamp = ~p~n", [SR#syslog.timestamp])++
+	       .io_lib:format("  hostname = ~p~n", [SR#syslog.hostname])++
+	       .io_lib:format("  tag = ~p~n", [SR#syslog.tag])++
+	       .io_lib:format("  content = ~p~n", [SR#syslog.content])++
+	       "</data>~n",[]))),
+    .file:close(LogFile),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.

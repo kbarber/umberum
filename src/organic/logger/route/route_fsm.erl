@@ -26,8 +26,9 @@
 ]).
 
 -record(state, {
-                source_proc
-               }).
+	  source_proc,
+	  writer
+	 }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -52,14 +53,17 @@ start_link(SourceProc) ->
 %% --------------------------
 init([SourceProc]) ->
     .process_flag(trap_exit, true),
-    {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
+    {ok, Writer} = .organic.logger.file.writer_sup:start_client(self()),
+    link(Writer),
+    {ok, 'RECEIVE', #state{source_proc=SourceProc, writer=Writer}}.
 
 %% --------------------------
 %% @doc 
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({log, _Log}, State)->
+'RECEIVE'({log, SR}, #state{writer=Writer} = State)->
+    .gen_fsm:send_event(Writer, {write, SR}),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.
