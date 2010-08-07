@@ -6,3 +6,4 @@
 {'src/organic/logger/route/*',[debug_info,{outdir,"ebin/organic/logger/route"},{i,'include'}]}.
 {'src/organic/logger/file/*',[debug_info,{outdir,"ebin/organic/logger/file"},{i,'include'}]}.
 {'src/organic/logger/mongodb/*',[debug_info,{outdir,"ebin/organic/logger/mongodb"},{i,'include'}]}.
+{'src/organic/logger/tokenizer/*',[debug_info,{outdir,"ebin/organic/logger/tokenizer"},{i,'include'}]}.

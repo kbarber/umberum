@@ -49,6 +49,7 @@ start_link(SourceProc) ->
 %% @end
 %% --------------------------
 init([SourceProc]) ->
+    .pg2:join('organic.logger.file.writer_fsm', self()),
     .process_flag(trap_exit, true),
     {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
 

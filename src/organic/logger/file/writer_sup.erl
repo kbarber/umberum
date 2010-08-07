@@ -30,7 +30,10 @@ start_client(Router) ->
 %%----------------------------------------------------------------------
 
 %% --------------------------
-%% @doc 
+%% @doc This is called by the parent supervisor to startup this supervisor.
+%%
+%% It starts this module as a supervisor and creates a link to the calling
+%% process.
 %%
 %% @end
 %% --------------------------
@@ -51,6 +54,7 @@ stop(_S) ->
 %% @end
 %% --------------------------
 init([]) ->
+    .pg2:create('organic.logger.file.writer_fsm'),
     {ok,
         {_SupFlags = {simple_one_for_one, ?MAX_RESTART, ?MAX_TIME},
             [
@@ -60,7 +64,7 @@ init([]) ->
                   temporary,                               % Restart  = permanent | transient | temporary
                   2000,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
                   worker,                                  % Type     = worker | supervisor
-                  []                                       % Modules  = [Module] | dynamic
+                  [.organic.logger.file.writer_fsm]        % Modules  = [Module] | dynamic
               }
             ]
         }

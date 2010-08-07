@@ -34,6 +34,14 @@ init(_Args) ->
                   supervisor,                              % Type     = worker | supervisor
                   []                                       % Modules  = [Module] | dynamic
               },
+              % Tokenizer supervisor
+              {   organic.logger.tokenizer.tokenizer_sup,
+                  {.organic.logger.tokenizer.tokenizer_sup,start_link,[]},
+                  permanent,                               % Restart  = permanent | transient | temporary
+                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
+                  supervisor,                              % Type     = worker | supervisor
+                  []                                       % Modules  = [Module] | dynamic
+              },
               % Route supervisor
               {   organic.logger.route.sup,
                   {.organic.logger.route.sup,start_link,[]},
