@@ -1,0 +1,41 @@
+#!/bin/bash
+#
+# Copyright 2010 Kenneth Barber
+
+OLOG_BOOT=organic.logger-1
+ERL_MAX_PIDS=100000000
+ERL_NAME=ologd
+ERL_CODEPATH=../../emongo/ebin
+ERL_COOKIE=changeme
+ERL_ASYNC_THREADS=1
+ERL_KERNEL_POLL=true
+
+start_olog() {
+    cd ebin
+    erl -name $ERL_NAME \
+        -pz $ERL_CODEPATH \
+        +P $ERL_MAX_PIDS \
+        +A $ERL_ASYNC_THREADS \
+        +K $ERL_KERNEL_POLL \
+        +W w \
+        -noinput \
+        -setcookie $ERL_COOKIE \
+        -detached \
+        -boot $OLOG_BOOT
+}
+
+case "$1" in
+    start)
+        start_olog
+        ;;
+    stop)
+        ;;
+    reload)
+        ;;
+    appmon)
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|reload|appmon}" >&2
+        exit 1
+        ;;
+esac
