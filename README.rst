@@ -17,19 +17,22 @@ Compilation
 
 Build::
 
-  ./build.sh
+  make
 
 Clean::
 
-  ./clean
+  make clean
 
 Execution
 ---------
 
 Run::
 
-  ./run.sh
+  ./bin/ologctl start
+  
+Stop::
 
+  ./bin/ologctl stop
 
 Todo
 ====
