@@ -67,22 +67,22 @@ init([Socket]) ->
 'SESSION_STARTUP'({open, #relp{txnr=Txnr}}, #state{socket=S})->
     Response = .lists:flatten(.io_lib:format("~p rsp 92 200 OK~nrelp_version=0~nrelp_software=librelp,1.0.0,http://librelp.adiscon.com~ncommands=syslog~n", 
     			      [Txnr])),
-    %.io:format("SEND: ~p~n", [Response]),
+    ?DEBUGF("SEND: ~p~n", [Response]),
     .gen_tcp:send(S, Response),
     {ok, SyslogPid} = .organic.logger.syslog_3164.decode_sup:start_client(S),
     link(SyslogPid),
     {next_state, 'SESSION_TRANSMISSION', #state{socket=S,syslog=SyslogPid}};
 'SESSION_STARTUP'({close, #relp{txnr=Txnr}}, #state{socket=S} = State)->
     Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
-    .io:format("SEND: ~p~n",[Response]),
+    ?DEBUGF("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {stop, normal, State};
-'SESSION_STARTUP'({_Command, _PR}, State)->
-    % TODO: this indicates an unknown command. Should be logged at some level perhaps?
+'SESSION_STARTUP'({Command, _PR}, State)->
+    ?WARNF("Unknown RELP command received on socket: ", [Command]),
     {stop, normal, State};
 'SESSION_STARTUP'(timeout, #state{socket=S} = State) ->
     Response = "0 serverclose 0~n",
-    .io:format("SEND: ~p ~n", [Response]),
+    ?DEBUGF("SEND: ~p ~n", [Response]),
     .gen_tcp:send(S, Response),
     {stop, normal, State};
 'SESSION_STARTUP'(_Other,State) ->
@@ -96,12 +96,12 @@ init([Socket]) ->
 'SESSION_TRANSMISSION'({syslog, #relp{data=Data, txnr=Txnr}}, #state{socket=S,syslog=Syslog} = State)->
     .gen_fsm:send_event(Syslog, {msg, Data}),
     Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
-    %.io:format("SEND: ~p~n",[Response]),
+    ?DEBUGF("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {next_state, 'SESSION_TRANSMISSION', State};
 'SESSION_TRANSMISSION'({close, #relp{txnr=Txnr}}, #state{socket=S} = State) ->
     Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
-    %.io:format("SEND: ~p~n",[Response]),
+    ?DEBUGF("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {stop, normal, State};
 'SESSION_TRANSMISSION'(_Other, State) ->

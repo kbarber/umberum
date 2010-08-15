@@ -84,7 +84,7 @@ init([Socket]) ->
 	nomatch -> ok;
         _Other -> ok
     end,
-    %.io:format("DATA: ~p~n", [Data]),
+    ?DEBUGF("DATA: ~p~n", [Data]),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.

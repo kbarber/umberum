@@ -6,3 +6,4 @@
 %% --------------------------
 -include_lib("include/conf.hrl").
 -include_lib("include/data.hrl").
+-include_lib("include/log.hrl").

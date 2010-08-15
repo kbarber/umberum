@@ -90,7 +90,7 @@ init([]) ->
     {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid}};
 'WAIT_FOR_SOCKET'(Other, State) ->
     %TODO: proper logging
-    .error_logger:error_msg("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
+    ?ERRF("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
     %% Allow to receive async messages
     {next_state, 'WAIT_FOR_SOCKET', State}.
 
@@ -101,7 +101,7 @@ init([]) ->
     {next_state, 'WAIT_FOR_DATA', State};
 
 'WAIT_FOR_DATA'(Data, State) ->
-    .io:format("~p Ignoring data: ~p\n", [self(), Data]),
+    ?WARNF("~p Ignoring data: ~p\n", [self(), Data]),
     {next_state, 'WAIT_FOR_DATA', State}.
 
 %%-------------------------------------------------------------------------
@@ -141,7 +141,7 @@ handle_info({tcp, Socket, Bin}, StateName, #state{socket=Socket} = StateData) ->
 
 handle_info({tcp_closed, Socket}, _StateName,
             #state{socket=Socket, addr=Addr} = StateData) ->
-    .error_logger:info_msg("~p Client ~p disconnected.\n", [self(), Addr]),
+    ?INFOF("~p Client ~p disconnected.\n", [self(), Addr]),
     {stop, normal, StateData};
 
 handle_info({'EXIT',_,_}, _StateName, StateData) ->
@@ -172,13 +172,13 @@ process_packet(RawData, Session) ->
 						 PR#relp{data=.organic.util:bin_part(Data,DataLen)}
 						});
 			Other ->
-			    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
+			    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
 		    end;
 		false -> 
 		    case DataLen+1 > size(Data) of
 			true ->
 			    % TODO: We're missing data, switch states so we can receive the rest
-			    .io:format("TODO: size is greater then data section. We cannot handle this case yet."),
+			    ?ERR("TODO: size is greater then data section. We cannot handle this case yet."),
 			    ok;
 			false ->
 			    % This packet contains multiple parts. Process the first, and then feed the
@@ -193,7 +193,7 @@ process_packet(RawData, Session) ->
 				    Remainder = .organic.util:bin_part(Data, DataLen+2, 999999999),
 				    process_packet(Remainder, Session);
 				Other ->
-				    .io:format("ERROR: No trailer found. Instead we found: ~p~n", [Other])
+				    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
 			    end
 		    end,
 		    ok

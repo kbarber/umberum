@@ -26,7 +26,7 @@ may move to a proper tracker.
   to restart broken processes and keeping a constant number of pooled 
   processes. Of course, how does this pool scale under different load one asks ...
 
-* Log output for the application itself needs to be standardized, especially
+* Log output for the application itself to a log file somewhere, especially
   now that we have background execution woking.
 
 * Structure based on how extensible bits will be written: For now I'm creating a
@@ -57,3 +57,4 @@ Here is a rough list of the current features for this release.
   accessing basic global configuration. Currently this configuration is provided
   in sys.config, but may change. The abstraction from mechanism is provided for
   this in the ?CONF macro.
+* Logging macros and functions.
