@@ -14,6 +14,7 @@
 %% @doc Callback for starting the application
 start(_Type, _Args) ->
     ?INFO("organic.logger application has started"),
+    .organic.log:setup(),
     .organic.logger.sup:start_link().
 
 %% @doc Callback for when the application stops

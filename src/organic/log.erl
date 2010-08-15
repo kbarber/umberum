@@ -6,7 +6,13 @@
 %% --------------------------
 
 -module(organic.log).
+-export([setup/0]).
 -export([err/1, err/2, warn/1, warn/2, info/1, info/2, debug/1, debug/2]).
+
+-include_lib("include/common.hrl").
+
+setup() ->
+    .error_logger:logfile({open,?CONF(ologd_log)}).
 
 %%-------------------------------------------------------------------------
 %% @doc Log an error message
