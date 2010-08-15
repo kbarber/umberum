@@ -34,6 +34,26 @@ Stop::
 
   ./bin/ologctl stop
 
+Usage
+-----
+
+At this point the application is very much in heavy development and will 
+be in various stages of 'working' depending on what revision you check out.
+
+For now, I have a RELP listener working. If you have rsyslog, modify your 
+configuration to include something like the following:
+
+  $ModLoad omrelp
+  *.*     :omrelp:127.0.0.1:2222;RSYSLOG_ForwardFormat
+
+This will forward your logs to the listener on port 2222 in RELP format. If you
+have mongodb running, check the 'test' database and you should see results 
+appear.
+
+Also tail /tmp/log to see the log file output. Again - this is all very basic 
+for now - see the TODO list for things I want to work on. Most of the obvious
+stuff is already there.
+
 Todo
 ====
 
