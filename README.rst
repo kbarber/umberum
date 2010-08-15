@@ -52,7 +52,7 @@ At this point the application is very much in heavy development and will
 be in various stages of 'working' depending on what revision you check out.
 
 For now, I have a RELP listener working. If you have rsyslog, modify your 
-configuration to include something like the following:
+configuration to include something like the following::
 
   $ModLoad omrelp
   *.*     :omrelp:127.0.0.1:2222;RSYSLOG_ForwardFormat

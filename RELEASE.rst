@@ -43,6 +43,12 @@ may move to a proper tracker.
   what bits are pluggable and what is the easiest way to modularise. We also need
   to be mindful of potentially running different process types on different boxes.
 
+* Support for other syslog protocols other then just RELP.
+  - The Syslog Protocol (latest): http://tools.ietf.org/search/rfc5424 this
+    seems to be the latest one and supports TCP. This is going to give us the
+    most coverage I believe. There is a UDP variant available but I don't think
+    this is quite as useful due to reliability problems.
+
 Version 1 - not yet released
 ---------
 
