@@ -2,9 +2,13 @@
 #
 # Copyright 2010 Kenneth Barber
 
+FQDN=`hostname -f 2>/dev/null || echo "localhost"`
+
 OLOG_BOOT=organic.logger-1
+
 ERL_MAX_PIDS=100000000
 ERL_NAME=ologd
+ERL_NODE=$ERL_NAME@$FQDN
 ERL_CODEPATH=../../emongo/ebin
 ERL_COOKIE=changeme
 ERL_ASYNC_THREADS=1
@@ -24,18 +28,67 @@ start_olog() {
         -boot $OLOG_BOOT
 }
 
+startfg_olog() {
+    cd ebin
+    erl -name $ERL_NAME \
+        -pz $ERL_CODEPATH \
+        +P $ERL_MAX_PIDS \
+        +A $ERL_ASYNC_THREADS \
+        +K $ERL_KERNEL_POLL \
+        +W w \
+        -setcookie $ERL_COOKIE \
+        -boot $OLOG_BOOT
+}
+
+ctl () {
+    COMMAND=$@
+
+    CTL_CONN="ctl-${ERL_NODE}"
+    ctlexec $CTL_CONN $COMMAND
+    result=$?
+
+    case $result in
+        0) :;;
+        1) :;;
+        2) help;;
+        3) help;;
+    esac
+    return $result
+}
+
+ctlexec () {
+    CONN_NAME=$1; shift
+    COMMAND=$@
+    cd ebin/
+    erl -name ${CONN_NAME} \
+        -noinput \
+        -hidden \
+        -pz $ERL_CODEPATH \
+        -s organic.ctl \
+        -setcookie $ERL_COOKIE \
+        -extra $ERL_NODE $COMMAND
+}
+
+stop_olog() {
+    cd ebin
+}
+
 case "$1" in
     start)
         start_olog
         ;;
+    startfg)
+        startfg_olog
+        ;;
     stop)
+        ctl stop
         ;;
     reload)
         ;;
     appmon)
         ;;
     *)
-        echo "Usage: $0 {start|stop|reload|appmon}" >&2
+        echo "Usage: $0 {start|startfg|stop|reload|appmon}" >&2
         exit 1
         ;;
 esac
