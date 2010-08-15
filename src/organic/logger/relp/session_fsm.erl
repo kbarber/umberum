@@ -10,7 +10,7 @@
 
 -behaviour(gen_fsm).
 
--include_lib("include/data.hrl").
+-include_lib("include/common.hrl").
 
 -export([start_link/1]).
 
@@ -29,8 +29,6 @@
                 addr,      % client address
 	        syslog     % syslog process
                }).
-
--define(TIMEOUT, 120000).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -59,7 +57,7 @@ start_link(Socket) ->
 %% --------------------------
 init([Socket]) ->
     .process_flag(trap_exit, true),
-    {ok, 'SESSION_STARTUP', #state{socket=Socket}, ?TIMEOUT}.
+    {ok, 'SESSION_STARTUP', #state{socket=Socket}, ?CONF(relp_login_timeout)}.
 
 %% --------------------------
 %% @doc 

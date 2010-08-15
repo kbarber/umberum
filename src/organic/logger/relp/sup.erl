@@ -12,11 +12,10 @@
 %% Supervisor callbacks
 -export([start_link/0, stop/1, init/1]).
 
-% TODO: some of this belongs in a configuration file
+-include_lib("include/common.hrl").
+
 -define(MAX_RESTART,    5).
 -define(MAX_TIME,      60).
--define(DEF_PORT,    2222).
-
 
 
 %%----------------------------------------------------------------------
@@ -29,7 +28,11 @@
 %% @end
 %% --------------------------
 start_link() ->
-    .supervisor:start_link({local, ?MODULE}, ?MODULE, [?DEF_PORT, .organic.logger.relp.con_fsm]).
+    .supervisor:start_link(
+        {local, ?MODULE}, 
+        ?MODULE, 
+        [?CONF(relp_port), .organic.logger.relp.con_fsm]
+        ).
 
 %% --------------------------
 %% @doc 

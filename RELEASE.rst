@@ -26,14 +26,6 @@ may move to a proper tracker.
   to restart broken processes and keeping a constant number of pooled 
   processes. Of course, how does this pool scale under different load one asks ...
 
-* Common place for configuration: I envision lots of configuration. Here is some
-  that we could use now:
-   - RELP listener port
-   - connection timeout
-   - output file name
-  Configuration is a hairy beast - so I'm happy to wait before fixing this one. 
-  I'd like more use cases to understand the best direction.
-
 * Log output for the application itself needs to be standardized, especially
   now that we have background execution woking.
 
@@ -61,3 +53,7 @@ Here is a rough list of the current features for this release.
 * Created Emakefile used by emake to build Erlang specific bits
 * Created Makefile for complete build purposes as emake is not holistic enough,
   and make is more familiar to the average punter
+* organic.conf module and conf.hrl header provide macros and functions for 
+  accessing basic global configuration. Currently this configuration is provided
+  in sys.config, but may change. The abstraction from mechanism is provided for
+  this in the ?CONF macro.

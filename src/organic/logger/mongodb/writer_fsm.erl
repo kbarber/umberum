@@ -2,13 +2,15 @@
 %% @copyright 2010 Kenneth Barber
 %% @doc This process is for outputting data to mongodb.
 %%
+%% TODO: Name this something other then writer_fsm as it is confusing in the editor
+%% due to conflicts with organic.file.writer_fsm
 %% @end
 %% --------------------------
 % 
 
 -module(.organic.logger.mongodb.writer_fsm).
 
--include_lib("include/data.hrl").
+-include_lib("include/common.hrl").
 
 -behaviour(gen_fsm).
 
@@ -66,7 +68,7 @@ init([SourceProc]) ->
         {"tag",SR#syslog.tag},
         {"content",SR#syslog.content}
     ],
-    .emongo:insert(emongo_pool, "log", LogEntry),
+    .emongo:insert(emongo_pool, ?CONF(mongodb_output_collection), LogEntry),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.

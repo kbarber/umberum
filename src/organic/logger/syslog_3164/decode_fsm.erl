@@ -10,7 +10,7 @@
 
 -behaviour(gen_fsm).
 
--include_lib("include/data.hrl").
+-include_lib("include/common.hrl").
 
 -export([start_link/1]).
 
@@ -80,7 +80,7 @@ init([Socket]) ->
 
 	    .gen_fsm:send_event(Router, {log, SR}),
 	    ok;
-	{match, _Capture} -> ok; %TODO:proper loggin
+	{match, _Capture} -> ok; %TODO:proper logging
 	nomatch -> ok;
         _Other -> ok
     end,

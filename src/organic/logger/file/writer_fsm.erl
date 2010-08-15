@@ -3,12 +3,14 @@
 %% @doc This process is for outputting data to a file.
 %%
 %% @end
+%% TODO: Name this something other then writer_fsm as it is confusing in the editor
+%% due to conflicts with organic.mongodb.writer_fsm
 %% --------------------------
 % 
 
 -module(.organic.logger.file.writer_fsm).
 
--include_lib("include/data.hrl").
+-include_lib("include/common.hrl").
 
 -behaviour(gen_fsm).
 
@@ -60,7 +62,7 @@ init([SourceProc]) ->
 %% --------------------------
 'RECEIVE'({write, SR}, State)->
     % TODO: logging to one file isn't that useful
-    {ok,LogFile} = .file:open("/tmp/log", [ write, append]),
+    {ok,LogFile} = .file:open(?CONF(file_outputpath), [ write, append]),
     .file:write(LogFile, list_to_binary(.io_lib:format("<data>~n"++
 	       .io_lib:format("  facility = ~p~n", [SR#syslog.facility])++
 	       .io_lib:format("  severity = ~p~n", [SR#syslog.severity])++

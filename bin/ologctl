@@ -9,13 +9,12 @@ OLOG_BOOT=organic.logger-1
 ERL_MAX_PIDS=100000000
 ERL_NAME=ologd
 ERL_NODE=$ERL_NAME@$FQDN
-ERL_CODEPATH=../../emongo/ebin
+ERL_CODEPATH="ebin/ ../emongo/ebin"
 ERL_COOKIE=changeme
 ERL_ASYNC_THREADS=1
 ERL_KERNEL_POLL=true
 
 start_olog() {
-    cd ebin
     erl -name $ERL_NAME \
         -pz $ERL_CODEPATH \
         +P $ERL_MAX_PIDS \
@@ -29,13 +28,13 @@ start_olog() {
 }
 
 startfg_olog() {
-    cd ebin
     erl -name $ERL_NAME \
         -pz $ERL_CODEPATH \
         +P $ERL_MAX_PIDS \
         +A $ERL_ASYNC_THREADS \
         +K $ERL_KERNEL_POLL \
         +W w \
+        -config sys \
         -setcookie $ERL_COOKIE \
         -boot $OLOG_BOOT
 }
@@ -59,7 +58,6 @@ ctl () {
 ctlexec () {
     CONN_NAME=$1; shift
     COMMAND=$@
-    cd ebin/
     erl -name ${CONN_NAME} \
         -noinput \
         -hidden \

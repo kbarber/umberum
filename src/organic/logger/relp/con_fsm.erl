@@ -14,7 +14,7 @@
 
 -behaviour(gen_fsm).
 
--include_lib("include/data.hrl").
+-include_lib("include/common.hrl").
 
 -export([start_link/0, set_socket/2]).
 

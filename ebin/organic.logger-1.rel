@@ -1,3 +1,16 @@
+%% --------------------------
+%% @copyright 2010 Kenneth Barber
+%% @doc Release file for this application suite.
+%%
+%% This file is used to generate the relevant .boot file which is used to boot
+%% strap the system. 
+%%
+%% Besides the normal items, we are loading:
+%% - organic.logger: our code
+%% - emongo: the mongodb client
+%% 
+%% @end
+%% --------------------------
 {release,
  {"organic.logger","A"},
  {erts, "5.7.4"},
