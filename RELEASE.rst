@@ -20,8 +20,8 @@ may move to a proper tracker.
   of the cost of starting processes but it feel more 'right' to have
   a pool of workers ready to act that aren't bound to a single requester
   process. Examples are:
-   - organic.logger.syslog_3164.decode_fsm
-   - organic.logger.route.route_fsm.erl
+  * organic.logger.syslog_3164.decode_fsm
+  * organic.logger.route.route_fsm.erl
   I think process groups (using pg2) is the way to go, using a supervisor
   to restart broken processes and keeping a constant number of pooled 
   processes. Of course, how does this pool scale under different load one asks ...
