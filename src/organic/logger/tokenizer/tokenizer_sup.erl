@@ -53,13 +53,13 @@ init([]) ->
                   [.organic.logger.tokenizer.match_sup]                 % Modules  = [Module] | dynamic
               },
               % Pattern supervisor
-              {   .organic.logger.tokenizer.patter_sup,                  % Id       = internal id
+              {   .organic.logger.tokenizer.pattern_sup,                  % Id       = internal id
                   {.organic.logger.tokenizer.pattern_sup,start_link,[]},  % StartFun = {M, F, A}
                   permanent,                                            % Restart  = permanent | transient | temporary
                   infinity,                                             % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                                           % Type     = worker | supervisor
                   [.organic.logger.tokenizer.pattern_sup]                 % Modules  = [Module] | dynamic
               }
-	    ]
-	}
+	        ]
+	    }
     }.

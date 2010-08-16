@@ -12,6 +12,8 @@
 %% Supervisor callbacks
 -export([start_link/0, stop/1, init/1]).
 
+-include_lib("include/common.hrl").
+
 -define(MAX_RESTART,    5).
 -define(MAX_TIME,      60).
 
@@ -25,7 +27,16 @@
 %% @end
 %% --------------------------
 start_link() ->
-    .supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+    {ok, Pid} = .supervisor:start_link({local, ?MODULE}, ?MODULE, []),
+    ?INFO("Started match supervisor, now starting 10 workers."),
+    start_child(Pid, 10),
+    {ok, Pid}.
+
+start_child(_Pid, 0) ->
+    ok;
+start_child(Pid, Num) ->
+    {ok,_Child} = .supervisor:start_child(Pid,[]),
+    start_child(Pid, Num-1).
 
 %% --------------------------
 %% @doc 
@@ -42,7 +53,7 @@ stop(_S) ->
 %% --------------------------
 init([]) ->
     {ok,
-        {_SupFlags = {simple_one_for_one, 10, 1},
+        {_SupFlags = {simple_one_for_one, ?MAX_RESTART, ?MAX_TIME},
             [
               % Match worker
               {   undefined,                                            % Id       = internal id
@@ -52,6 +63,6 @@ init([]) ->
                   worker,                                               % Type     = worker | supervisor
                   [.organic.logger.tokenizer.match_srv]                 % Modules  = [Module] | dynamic
               }
-	    ]
-	}
+	        ]
+	    }
     }.

@@ -5,16 +5,34 @@
 %% @end
 %% --------------------------
 
--module(organic.logger.tokenizer.match_srv).
+-module(.organic.logger.tokenizer.match_srv).
 -behaviour(gen_server).
--export([]).
+
+-export([start_link/0]).
+
+%% gen_server call backs
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
+         code_change/3, format_status/2]).
+
+-include_lib("include/common.hrl").
+
+%% --------------------------
+%% @doc
+%% @end
+%% --------------------------
+start_link() ->
+    ?INFO("Starting match worker"),
+    .gen_server:start_link(?MODULE, [], []).
 
 %% --------------------------
 %% @doc
 %% @end
 %% --------------------------
 init([])->
-     ok.
+    % Join group
+    .pg2:create(?MODULE),
+    ok = .pg2:join(?MODULE,self()),
+    {ok,self()}.
 
 %% --------------------------
 %% @doc

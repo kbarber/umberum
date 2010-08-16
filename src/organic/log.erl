@@ -44,7 +44,7 @@ info(Msg,Fmt) ->
     .error_logger:info_msg(Msg,Fmt).
 
 info(Msg) ->
-    .error_logger:info_msg(Msg).
+    .error_logger:info_msg("~p " ++ Msg, [self()]).
 
 %%-------------------------------------------------------------------------
 %% @doc Log a debug message
