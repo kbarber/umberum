@@ -15,7 +15,7 @@ ERL_ASYNC_THREADS=1
 ERL_KERNEL_POLL=true
 
 start_olog() {
-    erl -name $ERL_NAME \
+    erl -name $ERL_NODE \
         -pz $ERL_CODEPATH \
         +P $ERL_MAX_PIDS \
         +A $ERL_ASYNC_THREADS \
@@ -29,7 +29,7 @@ start_olog() {
 }
 
 startfg_olog() {
-    erl -name $ERL_NAME \
+    erl -name $ERL_NODE \
         -pz $ERL_CODEPATH \
         +P $ERL_MAX_PIDS \
         +A $ERL_ASYNC_THREADS \
