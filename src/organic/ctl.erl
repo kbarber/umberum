@@ -47,7 +47,7 @@ start() ->
             S ->
                 S
             end,
-	    halt(Status);
+	    halt();
 	_ ->
 	    %% TODO: print_usage() function
 	    halt()
@@ -79,6 +79,10 @@ process(["mnesia", "info"]) ->
 
 process(["tv"]) ->
     .tv:start(),
+    ok;
+
+process(["appmon"]) ->
+    .appmon:start(),
     ok;
 
 process(["etop"]) ->

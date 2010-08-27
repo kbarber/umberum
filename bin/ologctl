@@ -86,6 +86,7 @@ case "$1" in
     reload)
         ;;
     appmon)
+        ctl appmon
         ;;
     *)
         echo "Usage: $0 {start|startfg|stop|reload|appmon}" >&2

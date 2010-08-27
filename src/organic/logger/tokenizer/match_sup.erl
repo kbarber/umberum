@@ -28,8 +28,8 @@
 %% --------------------------
 start_link() ->
     {ok, Pid} = .supervisor:start_link({local, ?MODULE}, ?MODULE, []),
-    ?INFO("Started match supervisor, now starting 10 workers."),
-    start_child(Pid, 10),
+    ?INFO("Started match supervisor, now starting workers."),
+    start_child(Pid, ?CONF(tokenizer_match_procs)),
     {ok, Pid}.
 
 start_child(_Pid, 0) ->
