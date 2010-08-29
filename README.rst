@@ -8,9 +8,14 @@ Installation
 
 Prerequisites
 -------------
-* erlang R13B (kernel,stdlib,sasl)
+* erlang R14A
+  - kernel, stdlib, sasl
 * emongo 0.0.6: http://bitbucket.org/japerk/emongo/
 * mongodb 1.2.2
+
+Development is done on Debian Squeeze, so the version of Erlang is quite new. This was a conscious decision due to the improvements in R14A and the assumption is that by the time this code is ready for prime time, most distributions would have caught up.
+
+Failing that, we'll ship our own Erlang :-).
 
 Compilation
 -----------
