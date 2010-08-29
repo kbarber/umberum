@@ -14,14 +14,16 @@
 %%
 %% @end
 %% --------------------------
--define(ERR(MSG), .organic.log:err(MSG)).
--define(ERRF(MSG,FMT), .organic.log:err(MSG,FMT)).
+-define(LOG_FMT, "Pid: ~p Code: ~p:~p~n~n").
 
--define(WARN(MSG), .organic.log:warn(MSG)).
--define(WARNF(MSG,FMT), .organic.log:warn(MSG,FMT)).
+-define(ERR(MSG), .organic.log:err(?LOG_FMT ++ MSG,[self(),?FILE,?LINE])).
+-define(ERRF(MSG,FMT), .organic.log:err(?LOG_FMT ++ MSG,[self(),?FILE, ?LINE] ++ FMT)).
 
--define(INFO(MSG), .organic.log:info(MSG)).
--define(INFOF(MSG,FMT), .organic.log:info(MSG,FMT)).
+-define(WARN(MSG), .organic.log:warn(?LOG_FMT ++ MSG,[self(),?FILE,?LINE])).
+-define(WARNF(MSG,FMT), .organic.log:warn(?LOG_FMT ++ MSG,[self(),?FILE, ?LINE] ++ FMT)).
 
--define(DEBUG(MSG), .organic.log:debug(MSG)).
--define(DEBUGF(MSG,FMT), .organic.log:debug(MSG,FMT)).
+-define(INFO(MSG), .organic.log:info(?LOG_FMT ++ MSG,[self(),?FILE,?LINE])).
+-define(INFOF(MSG,FMT), .organic.log:info(?LOG_FMT ++ MSG,[self(),?FILE, ?LINE] ++ FMT)).
+
+-define(DEBUG(MSG), .organic.log:debug(?LOG_FMT ++ MSG,[self(),?FILE,?LINE])).
+-define(DEBUGF(MSG,FMT), .organic.log:debug(?LOG_FMT ++ MSG,[self(),?FILE, ?LINE] ++ FMT)).
