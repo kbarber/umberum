@@ -76,7 +76,7 @@ init([Socket]) ->
 	      timestamp = binary_to_list(Timestamp),
 	      hostname = binary_to_list(Hostname),
 	      tag = binary_to_list(Tag),
-          procid = .binary:bin_to_list(Procid),
+          procid = binary_to_list(Procid),
 	      content = Content},
 
 	    .gen_fsm:send_event(Router, {log, SR}),

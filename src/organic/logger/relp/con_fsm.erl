@@ -165,11 +165,11 @@ process_packet(RawData, Session) ->
 	    % RELP packet in this transmission.
 	    case DataLen+1 == size(Data) of
 		true -> 
-		    case .lists:last(binary_to_list(Data)) of
+		    case .binary:last(Data) of
 			10 ->
 			    .gen_fsm:send_event(Session, 
 						{PR#relp.command, 
-						 PR#relp{data=.organic.util:bin_part(Data,DataLen)}
+						 PR#relp{data=binary_part(Data,0,DataLen)}
 						});
 			Other ->
 			    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
@@ -183,14 +183,14 @@ process_packet(RawData, Session) ->
 			false ->
 			    % This packet contains multiple parts. Process the first, and then feed the
 			    % remainder back to this function for more processing.
-			    CurData = .organic.util:bin_part(Data, DataLen+1),
-			    case .lists:last(binary_to_list(CurData)) of
+			    CurData = binary_part(Data, 0, DataLen+1),
+			    case .binary:last(CurData) of
 				10 -> 
 				    .gen_fsm:send_event(Session,
 							{PR#relp.command,
-							 PR#relp{data=.organic.util:bin_part(CurData, DataLen)}
+							 PR#relp{data=binary_part(CurData, 0, DataLen)}
 							}),
-				    Remainder = .organic.util:bin_part(Data, DataLen+2, 999999999),
+				    Remainder = binary_part(Data, DataLen+2, size(Data)-(DataLen+2)),
 				    process_packet(Remainder, Session);
 				Other ->
 				    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
