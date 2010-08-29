@@ -66,16 +66,17 @@ init([Socket]) ->
 %% @end
 %% --------------------------
 'RECEIVE'({msg, Data}, #state{router=Router} = State)->
-    HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+):\\s(.*?)",
+    HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
     ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
     case .re:run(Data,HeaderRe,ReOpts) of
-	{match, [_All,Priority,Timestamp,Hostname,Tag,Content]} -> 
+	{match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
 	    SR = #syslog{
 	      facility = .organic.util:bin_to_int(Priority) div 8,
 	      severity = .organic.util:bin_to_int(Priority) rem 8,
 	      timestamp = binary_to_list(Timestamp),
 	      hostname = binary_to_list(Hostname),
 	      tag = binary_to_list(Tag),
+          procid = .binary:bin_to_list(Procid),
 	      content = Content},
 
 	    .gen_fsm:send_event(Router, {log, SR}),

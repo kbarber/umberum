@@ -28,5 +28,6 @@
 	timestamp,
 	hostname,
 	tag,
+    procid,
 	content
 	}).

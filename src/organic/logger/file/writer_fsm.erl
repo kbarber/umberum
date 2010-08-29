@@ -69,6 +69,7 @@ init([SourceProc]) ->
 	       .io_lib:format("  timestamp = ~p~n", [SR#syslog.timestamp])++
 	       .io_lib:format("  hostname = ~p~n", [SR#syslog.hostname])++
 	       .io_lib:format("  tag = ~p~n", [SR#syslog.tag])++
+	       .io_lib:format("  procid = ~p~n", [SR#syslog.procid])++
 	       .io_lib:format("  content = ~p~n", [SR#syslog.content])++
 	       "</data>~n",[]))),
     .file:close(LogFile),
