@@ -85,6 +85,10 @@ process(["appmon"]) ->
     .appmon:start(),
     ok;
 
+process(["pman"]) ->
+    .pman:start(),
+    ok;
+
 process(["etop"]) ->
     .etop:start(),
     ok;

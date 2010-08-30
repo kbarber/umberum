@@ -88,8 +88,11 @@ case "$1" in
     appmon)
         ctl appmon
         ;;
+    pman)
+        ctl pman
+        ;;
     *)
-        echo "Usage: $0 {start|startfg|stop|reload|appmon}" >&2
+        echo "Usage: $0 {start|startfg|stop|reload|appmon|pman}" >&2
         exit 1
         ;;
 esac
