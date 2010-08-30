@@ -36,7 +36,7 @@ start() ->
 			     end
 		     end,
 	    Node = list_to_atom(SNode1),
-        Status = case .rpc:call(Node, ?MODULE, process, [Args]) of
+        case .rpc:call(Node, ?MODULE, process, [Args]) of
             {badrpc, Reason} ->
                 .io:format("Failed RPC connection to the node ~p: ~p~n",
                     [Node, Reason]),
@@ -46,7 +46,7 @@ start() ->
                 halt();
             S ->
                 S
-            end,
+        end,
 	    halt();
 	_ ->
 	    %% TODO: print_usage() function

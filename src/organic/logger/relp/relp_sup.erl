@@ -5,7 +5,7 @@
 %% @end
 %% --------------------------
 
--module(.organic.logger.relp.sup).
+-module(.organic.logger.relp.relp_sup).
 
 -behaviour(supervisor).
 

@@ -39,6 +39,9 @@ Stop the backgrounded application with::
 
   ./bin/ologctl stop
 
+Administration
+--------------
+
 You can run the application in the foreground with an active Erlang tty session.
 This is perfect for debugging and development.::
 
@@ -49,6 +52,17 @@ From here you can do things like start the appmon process visualiser/manager::
   (ologd@localhost)1> appmon:start().
 
 To exit tty just type Ctrl-C then hit 'q'.
+
+Alternatively you can run the toolbar application while the logger is in the
+background::
+
+  ./bin/ologctl toolbar
+
+Or you can run webtools::
+
+  ./bin/ologctl webtools
+
+Which can normally be accessed via HTTP on port 8888.
 
 Usage
 -----

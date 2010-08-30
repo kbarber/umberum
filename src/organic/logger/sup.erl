@@ -14,13 +14,16 @@
 start_link() ->
     .supervisor:start_link(.organic.logger.sup, []).
 
+-define(MAX_RESTART,    5).
+-define(MAX_TIME,      60).
+
 init(_Args) ->
     {ok,
-        {_SupFlags = {one_for_one, 10, 1},
+        {_SupFlags = {one_for_one, ?MAX_RESTART, ?MAX_TIME},
             [
                 % RELP Listener
-                {   .organic.logger.relp.sup,           % Id       = internal id
-                  {.organic.logger.relp.sup,start_link,[]}, % StartFun = {M, F, A}
+                {   .organic.logger.relp.relp_sup,           % Id       = internal id
+                  {.organic.logger.relp.relp_sup,start_link,[]}, % StartFun = {M, F, A}
                   permanent,                               % Restart  = permanent | transient | temporary
                   infinity,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                                  % Type     = worker | supervisor

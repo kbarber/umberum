@@ -1,6 +1,6 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc This listener is an async accept based TCP listener
+%% @doc This listener is an async accept based TCP listener.
 %% 
 %% @end
 %% TODO: This module may be better of being generic so we can spawn many 
@@ -57,14 +57,14 @@ init([Port, Module]) ->
             {keepalive, true}, {backlog, 30}, {active, false},
             inet],
     case .gen_tcp:listen(Port, Opts) of
-    {ok, Listen_socket} ->
-        %%Create first accepting process
-        {ok, Ref} = .prim_inet:async_accept(Listen_socket, -1),
-        {ok, #state{listener = Listen_socket,
+        {ok, Listen_socket} ->
+            %%Create first accepting process
+            {ok, Ref} = .prim_inet:async_accept(Listen_socket, -1),
+            {ok, #state{listener = Listen_socket,
                     acceptor = Ref,
                     module   = Module}};
-    {error, Reason} ->
-        {stop, Reason}
+        {error, Reason} ->
+            {stop, Reason}
     end.
 
 %%-------------------------------------------------------------------------
@@ -131,7 +131,8 @@ handle_info({inet_async, ListSock, Ref, {ok, CliSocket}},
         {stop, Why, State}
     end;
 
-handle_info({inet_async, ListSock, Ref, Error}, #state{listener=ListSock, acceptor=Ref} = State) ->
+handle_info({inet_async, ListSock, Ref, Error}, 
+            #state{listener=ListSock, acceptor=Ref} = State) ->
     ?ERRF("Error in socket acceptor: ~p.\n", [Error]),
     {stop, Error, State};
 
@@ -172,11 +173,11 @@ code_change(_OldVsn, State, _Extra) ->
 set_sockopt(ListSock, CliSocket) ->
     true = .inet_db:register_socket(CliSocket, inet_tcp),
     case .prim_inet:getopts(ListSock, [active, nodelay, keepalive, delay_send, priority, tos]) of
-    {ok, Opts} ->
-        case .prim_inet:setopts(CliSocket, Opts) of
-        ok    -> ok;
-        Error -> .gen_tcp:close(CliSocket), Error
-        end;
-    Error ->
-        .gen_tcp:close(CliSocket), Error
+        {ok, Opts} ->
+            case .prim_inet:setopts(CliSocket, Opts) of
+                ok    -> ok;
+                Error -> .gen_tcp:close(CliSocket), Error
+            end;
+        Error ->
+            .gen_tcp:close(CliSocket), Error
     end.
