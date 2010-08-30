@@ -81,6 +81,10 @@ process(["toolbar"]) ->
     .toolbar:start(),
     ok;
 
+process(["webtool"]) ->
+    .webtool:start(),
+    ok;
+
 process(["etop"]) ->
     .etop:start(),
     ok;

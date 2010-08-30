@@ -88,6 +88,9 @@ case "$1" in
     toolbar)
         ctl toolbar
         ;;
+    webtool)
+        ctl webtool
+        ;;
     *)
         echo "Usage: $0 {start|startfg|stop|reload|appmon|pman}" >&2
         exit 1
