@@ -85,11 +85,8 @@ case "$1" in
         ;;
     reload)
         ;;
-    appmon)
-        ctl appmon
-        ;;
-    pman)
-        ctl pman
+    toolbar)
+        ctl toolbar
         ;;
     *)
         echo "Usage: $0 {start|startfg|stop|reload|appmon|pman}" >&2

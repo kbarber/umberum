@@ -77,16 +77,8 @@ process(["mnesia", "info"]) ->
     .mnesia:info(),
     ok;
 
-process(["tv"]) ->
-    .tv:start(),
-    ok;
-
-process(["appmon"]) ->
-    .appmon:start(),
-    ok;
-
-process(["pman"]) ->
-    .pman:start(),
+process(["toolbar"]) ->
+    .toolbar:start(),
     ok;
 
 process(["etop"]) ->
