@@ -108,8 +108,8 @@ handle_info({inet_async, ListSock, Ref, {ok, CliSocket}},
             #state{listener=ListSock, acceptor=Ref, module=Module} = State) ->
     try
         case set_sockopt(ListSock, CliSocket) of
-        ok              -> ok;
-        {error, Reason} -> exit({set_sockopt, Reason})
+            ok              -> ok;
+            {error, Reason} -> exit({set_sockopt, Reason})
         end,
 
         %% New client connected - spawn a new process using the simple_one_for_one
@@ -121,8 +121,8 @@ handle_info({inet_async, ListSock, Ref, {ok, CliSocket}},
 
         %% Signal the network driver that we are ready to accept another connection
         case .prim_inet:async_accept(ListSock, -1) of
-        {ok,    NewRef} -> ok;
-        {error, NewRef} -> exit({async_accept, .inet:format_error(NewRef)})
+            {ok,    NewRef} -> ok;
+            {error, NewRef} -> exit({async_accept, .inet:format_error(NewRef)})
         end,
 
         {noreply, State#state{acceptor=NewRef}}

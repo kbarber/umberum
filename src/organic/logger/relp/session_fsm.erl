@@ -27,8 +27,11 @@
 -record(state, {
                 socket,    % client socket
                 addr,      % client address
-	        syslog     % syslog process
-               }).
+                syslog     % syslog process
+                }).
+
+-define(RELP_CAP, "~p rsp 92 200 OK~nrelp_version=0~nrelp_software=librelp,1.0.0,http://librelp.adiscon.com~ncommands=syslog~n").
+-define(RELP_OK, "~p rsp 6 200 OK~n").
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -65,15 +68,14 @@ init([Socket]) ->
 %% @end
 %% --------------------------
 'SESSION_STARTUP'({open, #relp{txnr=Txnr}}, #state{socket=S})->
-    Response = .lists:flatten(.io_lib:format("~p rsp 92 200 OK~nrelp_version=0~nrelp_software=librelp,1.0.0,http://librelp.adiscon.com~ncommands=syslog~n", 
-    			      [Txnr])),
+    Response = .lists:flatten(.io_lib:format(?RELP_CAP,[Txnr])),
     ?DEBUGF("SEND: ~p~n", [Response]),
     .gen_tcp:send(S, Response),
-    {ok, SyslogPid} = .organic.logger.syslog_3164.decode_sup:start_client(S),
+    {ok, SyslogPid} = .organic.logger.syslog_3164.decode_sup:start_client(),
     link(SyslogPid),
     {next_state, 'SESSION_TRANSMISSION', #state{socket=S,syslog=SyslogPid}};
 'SESSION_STARTUP'({close, #relp{txnr=Txnr}}, #state{socket=S} = State)->
-    Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
+    Response = .lists:flatten(.io_lib:format(?RELP_OK, [Txnr])),
     ?DEBUGF("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {stop, normal, State};
@@ -94,13 +96,14 @@ init([Socket]) ->
 %% @end
 %% --------------------------
 'SESSION_TRANSMISSION'({syslog, #relp{data=Data, txnr=Txnr}}, #state{socket=S,syslog=Syslog} = State)->
+    ?DEBUGF("RECV: ~p~n",[Data]),
     .gen_fsm:send_event(Syslog, {msg, Data}),
-    Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
+    Response = .lists:flatten(.io_lib:format(?RELP_OK, [Txnr])),
     ?DEBUGF("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {next_state, 'SESSION_TRANSMISSION', State};
 'SESSION_TRANSMISSION'({close, #relp{txnr=Txnr}}, #state{socket=S} = State) ->
-    Response = .lists:flatten(.io_lib:format("~p rsp 6 200 OK~n", [Txnr])),
+    Response = .lists:flatten(.io_lib:format(?RELP_OK, [Txnr])),
     ?DEBUGF("SEND: ~p~n",[Response]),
     .gen_tcp:send(S, Response),
     {stop, normal, State};

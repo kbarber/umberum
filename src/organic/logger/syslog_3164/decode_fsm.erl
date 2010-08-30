@@ -12,7 +12,7 @@
 
 -include_lib("include/common.hrl").
 
--export([start_link/1]).
+-export([start_link/0]).
 
 %% gen_fsm callbacks
 -export([init/1, handle_event/3,
@@ -24,10 +24,8 @@
 ]).
 
 -record(state, {
-                socket,    % client socket
-                addr,       % client address
-	        router      % route pid
-               }).
+                router      % route pid
+                }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -42,8 +40,8 @@
 %%      respectively.
 %% @end
 %%-------------------------------------------------------------------------
-start_link(Socket) ->
-    .gen_fsm:start_link(?MODULE, [Socket], []).
+start_link() ->
+    .gen_fsm:start_link(?MODULE, [], []).
 
 %%%------------------------------------------------------------------------
 %%% Callback functions from gen_server
@@ -54,11 +52,11 @@ start_link(Socket) ->
 %%
 %% @end
 %% --------------------------
-init([Socket]) ->
+init([]) ->
     .process_flag(trap_exit, true),
     {ok, RoutePid} = .organic.logger.route.route_sup:start_client(self()),
     link(RoutePid),
-    {ok, 'RECEIVE', #state{socket=Socket, router=RoutePid}}.
+    {ok, 'RECEIVE', #state{router=RoutePid}}.
 
 %% --------------------------
 %% @doc 
@@ -69,20 +67,21 @@ init([Socket]) ->
     HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
     ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
     case .re:run(Data,HeaderRe,ReOpts) of
-	{match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
-	    SR = #syslog{
-	      facility = .organic.util:bin_to_int(Priority) div 8,
-	      severity = .organic.util:bin_to_int(Priority) rem 8,
-	      timestamp = binary_to_list(Timestamp),
-	      hostname = binary_to_list(Hostname),
-	      tag = binary_to_list(Tag),
-          procid = binary_to_list(Procid),
-	      content = Content},
+	    {match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
+	        SR = #syslog{
+	            facility = .organic.util:bin_to_int(Priority) div 8,
+	            severity = .organic.util:bin_to_int(Priority) rem 8,
+	            timestamp = binary_to_list(Timestamp),
+	            hostname = binary_to_list(Hostname),
+	            tag = binary_to_list(Tag),
+                procid = binary_to_list(Procid),
+	            content = Content},
 
-	    .gen_fsm:send_event(Router, {log, SR}),
-	    ok;
-	{match, _Capture} -> ok; %TODO:proper logging
-	nomatch -> ok;
+            .gen_fsm:send_event(Router, {log, SR}),
+            ok;
+        {match, _Capture} -> 
+            ?ERR("Unable to decode packet. Ignoring.");
+        nomatch -> ok;
         _Other -> ok
     end,
     ?DEBUGF("DATA: ~p~n", [Data]),

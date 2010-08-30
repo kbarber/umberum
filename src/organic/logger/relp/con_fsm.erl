@@ -31,8 +31,8 @@
 -record(state, {
                 socket,    % client socket
                 addr,      % client address
-	        session    % session pid
-               }).
+                session    % session pid
+                }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -89,14 +89,13 @@ init([]) ->
     link(SessionPid),
     {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid}};
 'WAIT_FOR_SOCKET'(Other, State) ->
-    %TODO: proper logging
     ?ERRF("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
     %% Allow to receive async messages
     {next_state, 'WAIT_FOR_SOCKET', State}.
 
 %% Notification event coming from client
 'WAIT_FOR_DATA'({data, Data}, #state{session=Session} = State) ->
-    %.io:format("RCV: ~p~n", [binary_to_list(Data)]),
+    ?DEBUGF("RCV: ~p~n", [binary_to_list(Data)]),
     process_packet(Data, Session),
     {next_state, 'WAIT_FOR_DATA', State};
 

@@ -10,7 +10,7 @@
 -behaviour(supervisor).
 
 %% Internal API
--export([start_client/1]).
+-export([start_client/0]).
 
 %% Supervisor callbacks
 -export([start_link/0, stop/1, init/1]).
@@ -22,8 +22,8 @@
 %% @doc A startup function for spawning new syslog handling FSM.
 %% @end
 %% --------------------------
-start_client(Socket) ->
-    .supervisor:start_child(organic.logger.syslog_3164.decode_sup, [Socket]).
+start_client() ->
+    .supervisor:start_child(organic.logger.syslog_3164.decode_sup, []).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks
