@@ -21,3 +21,5 @@ clean:
 	rm -fr doc/api
 	rm -f erl_crash*
 
+test:
+	echo "Testing ..."
