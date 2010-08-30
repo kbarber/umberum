@@ -1,6 +1,6 @@
 %% --------------------------
 %% @copyright 2010 Kenneth Barber
-%% @doc Application module for Organic Logger
+%% @doc Supervisor module for Organic Logger
 %% 
 %% @end
 %% --------------------------
