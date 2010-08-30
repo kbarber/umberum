@@ -27,7 +27,7 @@ init(_Args) ->
                   permanent,                               % Restart  = permanent | transient | temporary
                   infinity,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                                  % Type     = worker | supervisor
-                  [.organic.logger.relp.sup]          % Modules  = [Module] | dynamic
+                  [.organic.logger.relp.relp_sup]          % Modules  = [Module] | dynamic
                 },
                 % Syslog supervisor
                 {   organic.logger.syslog_3164.decode_sup,
@@ -46,8 +46,8 @@ init(_Args) ->
                   []                                       % Modules  = [Module] | dynamic
                 },
                 % Route supervisor
-                {   organic.logger.route.sup,
-                  {.organic.logger.route.sup,start_link,[]},
+                {   organic.logger.route.route_sup,
+                  {.organic.logger.route.route_sup,start_link,[]},
                   permanent,                               % Restart  = permanent | transient | temporary
                   infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
                   supervisor,                              % Type     = worker | supervisor

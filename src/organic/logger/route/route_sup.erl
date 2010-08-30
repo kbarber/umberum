@@ -5,7 +5,7 @@
 %% @end
 %% --------------------------
 
--module(.organic.logger.route.sup).
+-module(.organic.logger.route.route_sup).
 
 -behaviour(supervisor).
 
@@ -23,7 +23,7 @@
 %% @end
 %% --------------------------
 start_client(SourceProc) ->
-    .supervisor:start_child(organic.logger.route.sup, [SourceProc]).
+    .supervisor:start_child(organic.logger.route.route_sup, [SourceProc]).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks

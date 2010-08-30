@@ -56,7 +56,7 @@ start_link(Socket) ->
 %% --------------------------
 init([Socket]) ->
     .process_flag(trap_exit, true),
-    {ok, RoutePid} = .organic.logger.route.sup:start_client(self()), % borked
+    {ok, RoutePid} = .organic.logger.route.route_sup:start_client(self()),
     link(RoutePid),
     {ok, 'RECEIVE', #state{socket=Socket, router=RoutePid}}.
 
@@ -125,7 +125,7 @@ handle_info({'EXIT',From,_}, StateName, #state{router=Router} = StateData) ->
     % In this case, we just stop as well.
     case From of
 	Router ->
-	    {ok, RouterPid} = .organic.logger.route.sup:start_client(self()),
+	    {ok, RouterPid} = .organic.logger.route.route_sup:start_client(self()),
 	    link(RouterPid),
 	    {next_state, StateName, #state{router=RouterPid}};
 	_Other -> 
