@@ -15,6 +15,7 @@
 -record(relp, {
 	txnr,		% Transaction number
 	command,	% RELP command
+    datalen,    % Data length
 	data		% Data payload
 	}).
 

@@ -150,54 +150,67 @@ handle_info(_Info, StateName, StateData) ->
     {noreply, StateName, StateData}.
 
 process_packet(RawData, Session) ->
-    HeaderRe = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9})\\s?(.*)?",
-    ReOpts = [unicode,{capture,all,binary},dotall],
-    case .re:run(RawData,HeaderRe,ReOpts) of
-	{match, [_AllData, Txnr, Command, DataLenBin, Data]} -> 
-	    DataLen = .organic.util:bin_to_int(DataLenBin),
-	    % Lets populate a relp_packet record with the unpacked data
-	    PR = #relp{
-	      txnr = .organic.util:bin_to_int(Txnr),
-	      command = binary_to_atom(Command, latin1)},
+    ?DEBUGF("PROCESSING(~p): [~p]~n", [size(RawData),RawData]),
 
-	    % Check to see if the length matches the data size, indicating a single
-	    % RELP packet in this transmission.
-	    case DataLen+1 == size(Data) of
-		true -> 
-		    case .binary:last(Data) of
-			10 ->
-			    .gen_fsm:send_event(Session, 
-						{PR#relp.command, 
-						 PR#relp{data=binary_part(Data,0,DataLen)}
-						});
-			Other ->
-			    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
-		    end;
-		false -> 
-		    case DataLen+1 > size(Data) of
-			true ->
-			    % TODO: We're missing data, switch states so we can receive the rest
-			    ?ERR("TODO: size is greater then data section. We cannot handle this case yet."),
-			    ok;
-			false ->
-			    % This packet contains multiple parts. Process the first, and then feed the
-			    % remainder back to this function for more processing.
-			    CurData = binary_part(Data, 0, DataLen+1),
-			    case .binary:last(CurData) of
-				10 -> 
-				    .gen_fsm:send_event(Session,
-							{PR#relp.command,
-							 PR#relp{data=binary_part(CurData, 0, DataLen)}
-							}),
-				    Remainder = binary_part(Data, DataLen+2, size(Data)-(DataLen+2)),
-				    process_packet(Remainder, Session);
-				Other ->
-				    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
-			    end
-		    end,
-		    ok
-	    end;
-        _Other -> ok
+    HeaderRe = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
+    ReOpts = [unicode,{capture,all,binary},dotall,ungreedy],
+    case .re:run(RawData,HeaderRe,ReOpts) of
+        {match, [_, Txnr, Command, DataLenBin, Data]} -> 
+	        DataLen = .organic.util:bin_to_int(DataLenBin),
+	        % Lets populate a relp_packet record with the unpacked data
+	        PR = #relp{
+	            txnr = .organic.util:bin_to_int(Txnr),
+	            command = binary_to_atom(Command, latin1),
+                datalen = .organic.util:bin_to_int(DataLenBin)},
+
+            ?DEBUGF("Txnr: ~p Command: ~p Datalen: ~p Data: ~p size(Data): ~p~n",
+                [PR#relp.txnr,PR#relp.command,PR#relp.datalen,Data,size(Data)]),                
+
+	        % Check to see if the length matches the data size, indicating a single
+	        % RELP packet in this transmission.
+	        case DataLen+1 == size(Data) of
+                true -> 
+                    case .binary:last(Data) of
+                        10 ->
+                            .gen_fsm:send_event(Session, 
+                                {PR#relp.command, 
+                                 PR#relp{data=binary_part(Data,0,DataLen)}
+                                });
+                        Other ->
+                            ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
+                    end;
+		        false -> 
+            	    case DataLen+1 > size(Data) of
+                		true ->
+                            case DataLen of
+                                0 ->
+                                    .gen_fsm:send_event(Session,
+                                        {PR#relp.command,
+                                        PR});
+                                _Other ->
+                                    % TODO: We're missing data, switch states so we can receive the rest
+                                    ?ERR("TODO: size is greater then data section. We cannot handle this case yet.~n")
+                            end;
+                        false ->
+                            % This packet contains multiple parts. Process the first, and then feed the
+                            % remainder back to this function for more processing.
+                            CurData = binary_part(Data, 0, DataLen+1),
+                            case .binary:last(CurData) of
+                                10 -> 
+                                    .gen_fsm:send_event(Session,
+                                        {PR#relp.command,
+                                        PR#relp{data=binary_part(CurData, 0, DataLen)}
+                                        }),
+                                    Remainder = binary_part(Data, DataLen+2, size(Data)-(DataLen+2)),
+                                    process_packet(Remainder, Session);
+                                Other ->
+                                    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
+                            end
+                    end,
+                    ok
+            end;
+        _Other ->
+            ?ERRF("Received packet does not look it is a RELP packet: [~p]. Ignoring.", [RawData])
     end.
 
 %%-------------------------------------------------------------------------
