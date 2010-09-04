@@ -12,11 +12,12 @@
 %% @end
 %% --------------------------
 {release,
- {"organic.logger","A"},
+ {"organic","A"},
  {erts, "5.8"},
  [{kernel, "2.14"},
   {stdlib, "1.17"},
   {sasl, "2.1.9.2"},
   {organic.logger, "1"},
+  {organic.event, "1"},
   {emongo, "0.0.6"}]
 }.

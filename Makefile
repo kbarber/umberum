@@ -8,15 +8,19 @@ all:
 	@mkdir -p ebin/organic/logger/file
 	@mkdir -p ebin/organic/logger/mongodb
 	@mkdir -p ebin/organic/logger/tokenizer
+	@mkdir -p ebin/organic/event
+	@mkdir -p ebin/organic/event/proc
 	@erl -make
 
 	@erlc 	-pz ../emongo/ebin \
 		-Iebin/ \
 		-o ebin \
-		ebin/organic.logger-1.rel 
+		ebin/organic-1.rel 
 
 clean: 
 	rm -f ebin/*.beam
+	rm -f ebin/*.boot
+	rm -f ebin/*.script
 	rm -fr ebin/organic
 	rm -fr doc/api
 	rm -f erl_crash*

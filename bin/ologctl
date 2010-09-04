@@ -4,7 +4,7 @@
 
 FQDN=`hostname -f 2>/dev/null || echo "localhost"`
 
-OLOG_BOOT=organic.logger-1
+OLOG_BOOT=organic-1
 
 ERL_MAX_PIDS=100000000
 ERL_NAME=ologd

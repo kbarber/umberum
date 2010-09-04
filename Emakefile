@@ -8,6 +8,9 @@
     [debug_info,{outdir,"ebin"},{i,'include'}]}.
 {'src/organic/*',
     [debug_info,{outdir,"ebin/organic"},{i,'include'}]}.
+
+%% Log Receiver
+
 {'src/organic/logger/*',
     [debug_info,{outdir,"ebin/organic/logger"},{i,'include'}]}.
 {'src/organic/logger/relp/*',
@@ -22,3 +25,10 @@
     [debug_info,{outdir,"ebin/organic/logger/mongodb"},{i,'include'}]}.
 {'src/organic/logger/tokenizer/*',
     [debug_info,{outdir,"ebin/organic/logger/tokenizer"},{i,'include'}]}.
+
+%% Event Engine
+
+{'src/organic/event/*',
+    [debug_info,{outdir,"ebin/organic/event"},{i,'include'}]}.
+{'src/organic/event/proc/*',
+    [debug_info,{outdir,"ebin/organic/event/proc"},{i,'include'}]}.

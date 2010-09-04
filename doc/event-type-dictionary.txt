@@ -1,0 +1,93 @@
+Here I've started to document the format of the event data type. At the moment
+the transmitted data consists of a list of tuples.
+
+The key is the type - which consists of a dot seperated string (ASCII 7 bit
+at this point until further notice).
+
+I'm gonna document the types here in a rough way. In the future I'd like to see
+typing applies to the data sets but for now this is just informative.
+
+TYPES
+=====
+
+core
+----
+
+any
+number.uint
+number.sint
+number.real
+string
+boolean
+
+collections
+-----------
+
+list
+hash
+
+others
+------
+
+ip_address
+
+
+EVENT ATTRIBUTES
+================
+
+relp - RELP Packets
+-------------------
+
+relp.txnr               
+    desc: RELP transaction number
+    type: number.uint
+
+relp.command            
+    desc: RELP command
+    type: string
+
+relp.datalen            
+    desc: RELP length of data field
+    type: number.uint
+
+relp.data               
+    desc: RELP raw data field
+    type: string
+
+relp.session_id         Listener assigned session ID (not part of the protocol)
+
+relp.tx_ip          
+    desc: IP that sent the packet
+    type: ip_address
+
+relp.tx_port
+    desc: Remote TCP port of sender
+    type: number.uint
+
+relp.rx_ip		Listener ip
+
+relp.rx_port          Listener port
+
+syslog_3164 - Syslog
+--------------------
+
+syslog_3164.facility    Facility (cron, mail, kernel etc.)
+syslog_3164.severity    Severity (debug,info,emergency etc.)
+syslog_3164.timestamp   Timestamp 
+syslog_3164.tag         Tag/Application
+syslog_3164.procid      Process ID (from format tag[xx]:)
+syslog_3164.content     Syslog data
+
+Processing Data
+---------------
+
+token.match    
+
+sudo - Sudo Specific Data
+-------------------------
+         
+sudo.calling_user
+sudo.tty
+sudo.pwd
+sudo.user
+sudo.command
