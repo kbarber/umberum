@@ -1,0 +1,38 @@
+Some sample rule definitions:
+
+{
+    rule: {
+        "name": "Tokenize SUDO logs",
+        "match": {
+            [ "==", "syslog_3164.tag", "sudo" ],
+        },
+        "action": {
+            "tokenize": {
+                "key": "syslog_3164.content",
+                "pattern": "\\s+(.+)\\s:\\sTTY=(.+)\\s;\\sPWD=(.+)\\s;\\sUSER=(.+)\\s;\\sCOMMAND=(.+)",
+                "fields": [ "sudo.user", "sudo.tty", "sudo.pwd", "sudo.to_user", "sudo.command" ]
+        }
+    }
+}
+
+{
+    rule: {
+        "name": "Alert on SUDO to root user on web hosts",
+        "match": {
+            [ "and",
+                [ "==", "syslog_3164.tag", "sudo" ],
+                [ "==", "sudo.to_user", "root" ],
+                [ "=~", "syslog_3164.hostname", "web.*" ]
+            ]
+        }
+        "action": {
+            "email": {
+                "address": "ken@bob.sh",
+                "subject": "Alert on SUDO to root user on web hosts",
+                "content": "The user $sudo.to_user has tried to SUDO to root on web host: $syslog_3164.hostname"
+            }
+        }
+    }
+}
+
+
