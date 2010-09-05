@@ -1,38 +1,76 @@
-Some sample rule definitions:
+Examples
+========
+
+A rule that tokenizes syslog_3164 packets received on RELP streams:
 
 {
-    rule: {
-        "name": "Tokenize SUDO logs",
-        "match": {
-            [ "==", "syslog_3164.tag", "sudo" ],
-        },
-        "action": {
-            "tokenize": {
-                "key": "syslog_3164.content",
-                "pattern": "\\s+(.+)\\s:\\sTTY=(.+)\\s;\\sPWD=(.+)\\s;\\sUSER=(.+)\\s;\\sCOMMAND=(.+)",
-                "fields": [ "sudo.user", "sudo.tty", "sudo.pwd", "sudo.to_user", "sudo.command" ]
-        }
+    "rule": {
+        "name": "Tokenize RELP packets as Syslog 3164 packets",
+        "match": [ "==", "organic.network_protocol", "relp" ],
+        "do": [
+            {
+                "action": "tokenize",
+                "key": "relp.data",
+                "pattern": "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
+                "fields": [ "syslog_3164.priority","syslog_3164.timestamp","syslog_3164.hostname",
+                            "syslog_3164.tag",undef,"syslog_3164.procid","syslog_3164.content"]
+            }
+        ]
     }
 }
 
+A rule that tokenizes incoming sudo logs:
+
 {
-    rule: {
+    "rule": {
+        "name": "Tokenize SUDO logs",
+        "match": [ "==", "syslog_3164.tag", "sudo" ],
+        "do": [
+            {
+                "action": "tokenize",
+                "key": "syslog_3164.content",
+                "pattern": "\\s+(.+)\\s:\\sTTY=(.+)\\s;\\sPWD=(.+)\\s;\\sUSER=(.+)\\s;\\sCOMMAND=(.+)",
+                "fields": [ "sudo.user", "sudo.tty", "sudo.pwd", "sudo.to_user", "sudo.command" ]
+            }
+        ]
+    }
+}
+
+A rule that alerts on particular events:
+
+{
+    "rule": {
         "name": "Alert on SUDO to root user on web hosts",
-        "match": {
+        "match": 
             [ "and",
                 [ "==", "syslog_3164.tag", "sudo" ],
                 [ "==", "sudo.to_user", "root" ],
                 [ "=~", "syslog_3164.hostname", "web.*" ]
-            ]
-        }
-        "action": {
-            "email": {
+            ],
+        "do": [
+            {
+                "action": "notify_email",
                 "address": "ken@bob.sh",
                 "subject": "Alert on SUDO to root user on web hosts",
                 "content": "The user $sudo.to_user has tried to SUDO to root on web host: $syslog_3164.hostname"
             }
-        }
+        ]
     }
 }
 
+A rule to store syslog data out of RELP streams to mongodb:
 
+{
+    "rule": {
+        "name": "Store RELP packets in mongodb",
+        "match": [ "==", "organic.network_protocol", "relp" ],
+        "do": [
+            {
+                "action": "store_mongodb",
+                "db": "organic",
+                "collection": "relp_logs",
+                "keys": "syslog_3164.*"
+            }
+        ]
+    }
+}
