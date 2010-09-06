@@ -1,3 +1,15 @@
+Structure
+=========
+
+TODO
+
+Actions
+=======
+
+tokenize
+notify.email
+store.mongodb
+
 Examples
 ========
 
@@ -49,7 +61,7 @@ A rule that alerts on particular events:
             ],
         "do": [
             {
-                "action": "notify_email",
+                "action": "notify.email",
                 "address": "ken@bob.sh",
                 "subject": "Alert on SUDO to root user on web hosts",
                 "content": "The user $sudo.to_user has tried to SUDO to root on web host: $syslog_3164.hostname"
@@ -66,7 +78,7 @@ A rule to store syslog data out of RELP streams to mongodb:
         "match": [ "==", "organic.network_protocol", "relp" ],
         "do": [
             {
-                "action": "store_mongodb",
+                "action": "store.mongodb",
                 "db": "organic",
                 "collection": "relp_logs",
                 "keys": "syslog_3164.*"
