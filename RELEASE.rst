@@ -38,6 +38,20 @@ may move to a proper tracker.
   UDP variant available but I don't think this is quite as useful due to lower
   reliability.
 
+* Produce an agent to run on a box for aggregation and local access. This agent
+  should probably communicate back to the central server using something
+  asynchronous like STOMP/AMQP. The agent itself should provide the means for 
+  other systems such as Nagios, Collectd etc. to send messages back to the 
+  central server.
+
+* Investigate using Lucene as a storage end-point.
+
+* Utilising the lucene storage, provide a web front end for searching and 
+  reporting on this data.
+
+* Implement rules engine as set out in rule-definitions.txt, allow these rules
+  to be managed via a web GUI.
+
 Version 1 - not yet released
 ---------
 
