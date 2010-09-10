@@ -42,12 +42,13 @@ may move to a proper tracker.
   should probably communicate back to the central server using something
   asynchronous like STOMP/AMQP. The agent itself should provide the means for 
   other systems such as Nagios, Collectd etc. to send messages back to the 
-  central server.
+  central server. Investigate technologies like ZeroMq, RabbitMq and ActiveMq.
 
 * Investigate using Lucene as a storage end-point.
 
 * Utilising the lucene storage, provide a web front end for searching and 
-  reporting on this data.
+  reporting on this data. Our friend whack on #devops is looking at elasticsearch
+  for logstash for example.
 
 * Implement rules engine as set out in rule-definitions.txt, allow these rules
   to be managed via a web GUI.
