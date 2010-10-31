@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc Event API
 %%
 %% This module provides a client API for interfacing with the event processing

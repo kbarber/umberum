@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc This is a state based connection handler for receiving and parsing
 %% RELP based protocol logging traffic. See here for reference:
 %%

@@ -1,22 +1,29 @@
 About
 =====
 
-A RELP protocol syslog receiver that writes out to a log file and MongoDB.
+Umberum is an experimental holistic systems management artifact.
+
+The engine is the main backend component.
 
 Installation
 ============
 
 Prerequisites
 -------------
+
 * erlang R14A
   - kernel, stdlib, sasl
-* emongo 0.0.6: http://bitbucket.org/japerk/emongo/
+
+Mongodb support:
+
+* emongo 0.0.6: 
+  - http://bitbucket.org/japerk/emongo/
 * mongodb 1.2.2
 
 Development is done on Debian Squeeze, so the version of Erlang is quite new. 
-This was a conscious decision due to the improvements in R14A and the assumption 
-is that by the time this code is ready for prime time, most distributions would 
-have caught up.
+This was a conscious decision due to the improvements in R14A and the 
+assumption is that by the time this code is ready for prime time, most 
+distributions would have caught up.
 
 Failing that, we'll ship our own Erlang :-).
 
@@ -90,7 +97,7 @@ stuff is already there.
 Copyright and License
 =====================
 
-Copyright (C) 2010 Bob.sh
+Copyright (C) 2010 Bob.sh Limited
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

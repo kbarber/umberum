@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc This process is for outputting data to a file.
 %%
 %% @end

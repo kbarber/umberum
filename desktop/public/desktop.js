@@ -1,5 +1,5 @@
 /*!
- * Organic Desktop
+ * Umberum Desktop
  *
  * Based on ExtJS desktop example.
  *
@@ -21,7 +21,7 @@
  *
  */
 
-// Organic Desktop
+// Umberum Desktop
 OrgDesktop = new Ext.app.App({
     init :function(){
         Ext.QuickTips.init();

@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc This process is for outputting data to mongodb.
 %%
 %% TODO: Name this something other then writer_fsm as it is confusing in the editor

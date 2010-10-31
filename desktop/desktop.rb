@@ -11,7 +11,7 @@ require 'yaml'
 require 'pp'
 
 # Load configuration
-CONF = YAML.load_file("/etc/organic/desktop.conf")
+CONF = YAML.load_file("/etc/umberum/desktop.conf")
 
 # Configure rack sessions
 #use Rack::Session::Memcache,	:key => CONF["rack"]["cookie_key"],

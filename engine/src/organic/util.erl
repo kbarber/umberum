@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc A place to store misc functions that are used everywhere in Organic
 %% development projects in Erlang.
 %%

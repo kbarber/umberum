@@ -1,4 +1,4 @@
-# Copyright 2010 Kenneth Barber
+# Copyright 2010 Bob.sh Limited
 
 all: 
 	@mkdir -p ebin/organic/logger

@@ -1,25 +1,8 @@
 About
 =====
 
-Umberum Desktop is a graphical interface for Umberum.
+Umberum is an experimental holistic systems management artifact.
 
-Installation
-============
-
-Prerequisites
--------------
-* A decent modern javascript capable browser
-* ExtJS 3.3.0
-
-Installation
-------------
-
-The basic functionality to-date can be access by:
-
-1. Download a copy of ExtJS (from http://www.sencha.com/products/js/) and 
-   store it in <PATH>/public/ext.
-
-2. Browse to the path in a browser.
 
 Copyright and License
 =====================

@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc Organic control module.
 %%
 %% This module controls the organic erlang processes. It uses rpc techniques

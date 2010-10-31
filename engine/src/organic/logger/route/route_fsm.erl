@@ -1,5 +1,5 @@
 %% --------------------------
-%% @copyright 2010 Kenneth Barber
+%% @copyright 2010 Bob.sh Limited
 %% @doc This process is for routing decoded messages to
 %% a suitable output mechanism such as storage or another
 %% syslog server.
