@@ -1,0 +1,282 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://organicit.org/ontologies/rbac.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://organicit.org/ontologies/rbac.owl">
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#accessFromSubject"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#roleAccessTo"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#subjectAccessTo"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#permissionName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleDescription"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectEmailAddress"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectName"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#003a3d43-9ec2-49dd-a653-5320970984ee"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#0badf740-cdc9-40b5-8048-8bd080e7d160"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#5c1857a7-feed-4bcb-a1ab-7fd860ad6204"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#7ce618ad-cb14-4ace-b73d-fe2cd6aafe99"/>
+    </Declaration>
+    <ClassAssertion>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+        <NamedIndividual IRI="#003a3d43-9ec2-49dd-a653-5320970984ee"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+        <NamedIndividual IRI="#0badf740-cdc9-40b5-8048-8bd080e7d160"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+        <NamedIndividual IRI="#5c1857a7-feed-4bcb-a1ab-7fd860ad6204"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+        <NamedIndividual IRI="#7ce618ad-cb14-4ace-b73d-fe2cd6aafe99"/>
+    </ClassAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+        <NamedIndividual IRI="#0badf740-cdc9-40b5-8048-8bd080e7d160"/>
+        <NamedIndividual IRI="#7ce618ad-cb14-4ace-b73d-fe2cd6aafe99"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#roleAccessTo"/>
+        <NamedIndividual IRI="#5c1857a7-feed-4bcb-a1ab-7fd860ad6204"/>
+        <NamedIndividual IRI="#003a3d43-9ec2-49dd-a653-5320970984ee"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+        <NamedIndividual IRI="#7ce618ad-cb14-4ace-b73d-fe2cd6aafe99"/>
+        <NamedIndividual IRI="#5c1857a7-feed-4bcb-a1ab-7fd860ad6204"/>
+    </ObjectPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#permissionName"/>
+        <NamedIndividual IRI="#003a3d43-9ec2-49dd-a653-5320970984ee"/>
+        <Literal datatypeIRI="&xsd;string">Bugzilla Access</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectName"/>
+        <NamedIndividual IRI="#0badf740-cdc9-40b5-8048-8bd080e7d160"/>
+        <Literal datatypeIRI="&xsd;string">Kenneth Barber</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleName"/>
+        <NamedIndividual IRI="#5c1857a7-feed-4bcb-a1ab-7fd860ad6204"/>
+        <Literal datatypeIRI="&xsd;string">Bob.sh Member</Literal>
+    </DataPropertyAssertion>
+    <DataPropertyAssertion>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleName"/>
+        <NamedIndividual IRI="#7ce618ad-cb14-4ace-b73d-fe2cd6aafe99"/>
+        <Literal datatypeIRI="&xsd;string">Bob.sh Staff</Literal>
+    </DataPropertyAssertion>
+    <EquivalentObjectProperties>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+    </EquivalentObjectProperties>
+    <EquivalentObjectProperties>
+        <ObjectProperty IRI="#roleAccessTo"/>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+    </EquivalentObjectProperties>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#accessFromSubject"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#roleAccessTo"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#subjectAccessTo"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#subjectAccessTo"/>
+        <ObjectProperty IRI="#accessFromSubject"/>
+    </InverseObjectProperties>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#roleAccessTo"/>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+    </InverseObjectProperties>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+    </InverseObjectProperties>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#roleAccessTo"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+    </TransitiveObjectProperty>
+    <TransitiveObjectProperty>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+    </TransitiveObjectProperty>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#accessFromSubject"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#roleAccessTo"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#subjectAccessTo"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#accessFromSubject"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#roleAccessFrom"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#roleAccessTo"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#roleMemberSubject"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#subjectAccessTo"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#subjectMemberOfRole"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </ObjectPropertyRange>
+    <SubDataPropertyOf>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#permissionName"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleDescription"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleName"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectEmailAddress"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectName"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#permissionName"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Permission"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleDescription"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#roleName"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Role"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectName"/>
+        <Class IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#Subject"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#permissionName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="http://organicit.org/ontologies/2010/8/Ontology1285518284254.owl#subjectEmailAddress"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+

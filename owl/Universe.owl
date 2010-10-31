@@ -1,0 +1,747 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://organicit.org/ontologies/Universe.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://organicit.org/ontologies/Universe.owl">
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Annotation>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <Literal datatypeIRI="&xsd;string">This is the top level for Organic, thus representing all of creation :-). Or at the very least all elements within our problem domain.
+
+For now all elements belong here. In the future we may break these out into seperate documents if the model remains unconsteded for long enough and we feel the move is right. There are problems in 4.1 with importing external documents and I&#39;d like to see these resolved first as well.
+
+For now the elements here cover all views - logical, physical, conceptual and more. The model will eventually reflect these perspectives but for now while we build ideas the heirachy is undecided.
+
+Feel free to add new concepts and relationships as you see them. This is very much a work in progress.</Literal>
+    </Annotation>
+    <Declaration>
+        <Class IRI="#Account"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#AirConditioner"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Application"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ApplicationSuite"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#BIOS"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Browser"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Building"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#CPU"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Cable"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Chassis"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Command"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Community"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Company"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#CompanyGroup"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Configuration"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Country"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Database"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Eeprom"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#File"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Filesystem"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Geography"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Group"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#HardDisk"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Hardware"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#IPAddress"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#IPv4Address"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#IPv6Address"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Identifiers"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#InterfaceCard"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#InterfacePort"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#LdapDatabase"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Log"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MacAddress"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MacAddressRange"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ManagementModule"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Memory"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#MessageQueue"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Motherboard"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Network"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#NetworkInterface"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#NetworkService"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#NetworkSocket"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#OSDistribution"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#OSInstance"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#OpticalDrive"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Package"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#PackageRepository"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Person"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Planet"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#PostalCode"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Process"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#ProgrammingLanguage"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Protocol"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Rack"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#RdfDatabase"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#RelationalDatabase"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Software"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#SolarSystem"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#SourceCode"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#State"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Street"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#URI"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#User"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#VDU"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#WWN"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasManufacturer"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#hasPerson"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#isManufacturerOf"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#isPersonOf"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#packageRequiredBy"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#packageRequires"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#companyName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#identifierValue"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#ipv4Address"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#macAddress"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#macAddressPrefix"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#packageName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#personFullName"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#serialNumber"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#uri"/>
+    </Declaration>
+    <Declaration>
+        <DataProperty IRI="#version"/>
+    </Declaration>
+    <SubClassOf>
+        <Class IRI="#Account"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#AirConditioner"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Application"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ApplicationSuite"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#BIOS"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Browser"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Building"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#CPU"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Cable"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Chassis"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Command"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Company"/>
+        <Class abbreviatedIRI=":Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#CompanyGroup"/>
+        <Class abbreviatedIRI=":Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Configuration"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Country"/>
+        <Class IRI="#Geography"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Database"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Eeprom"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#File"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Filesystem"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Group"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#HardDisk"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#IPAddress"/>
+        <Class IRI="#Identifiers"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#IPv4Address"/>
+        <Class IRI="#IPAddress"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#IPv6Address"/>
+        <Class IRI="#IPAddress"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#InterfaceCard"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#InterfacePort"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#LdapDatabase"/>
+        <Class IRI="#Database"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Log"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MacAddress"/>
+        <Class IRI="#Identifiers"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MacAddressRange"/>
+        <Class IRI="#Identifiers"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ManagementModule"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Memory"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#MessageQueue"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Motherboard"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#NetworkInterface"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#NetworkService"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#NetworkSocket"/>
+        <Class abbreviatedIRI=":Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#OSDistribution"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#OSInstance"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#OpticalDrive"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Package"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#PackageRepository"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Planet"/>
+        <Class IRI="#Geography"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#PostalCode"/>
+        <Class IRI="#Geography"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Process"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#ProgrammingLanguage"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Protocol"/>
+        <Class abbreviatedIRI=":Thing"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Rack"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#RdfDatabase"/>
+        <Class IRI="#Database"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#RelationalDatabase"/>
+        <Class IRI="#Database"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#SolarSystem"/>
+        <Class IRI="#Geography"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#SourceCode"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#State"/>
+        <Class IRI="#Geography"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#Street"/>
+        <Class IRI="#Geography"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#URI"/>
+        <Class IRI="#Identifiers"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#User"/>
+        <Class IRI="#Software"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#VDU"/>
+        <Class IRI="#Hardware"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="#WWN"/>
+        <Class IRI="#Identifiers"/>
+    </SubClassOf>
+    <DisjointClasses>
+        <Class IRI="#IPv4Address"/>
+        <Class IRI="#IPv6Address"/>
+    </DisjointClasses>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#hasManufacturer"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#hasPerson"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#isManufacturerOf"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#isPersonOf"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#packageRequiredBy"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#packageRequires"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#isManufacturerOf"/>
+        <ObjectProperty IRI="#hasManufacturer"/>
+    </InverseObjectProperties>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#hasPerson"/>
+        <ObjectProperty IRI="#isPersonOf"/>
+    </InverseObjectProperties>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#packageRequires"/>
+        <ObjectProperty IRI="#packageRequiredBy"/>
+    </InverseObjectProperties>
+    <InverseFunctionalObjectProperty>
+        <ObjectProperty IRI="#isManufacturerOf"/>
+    </InverseFunctionalObjectProperty>
+    <AsymmetricObjectProperty>
+        <ObjectProperty IRI="#hasPerson"/>
+    </AsymmetricObjectProperty>
+    <AsymmetricObjectProperty>
+        <ObjectProperty IRI="#isPersonOf"/>
+    </AsymmetricObjectProperty>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasManufacturer"/>
+        <Class IRI="#Hardware"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasManufacturer"/>
+        <Class IRI="#MacAddress"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasManufacturer"/>
+        <Class IRI="#MacAddressRange"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#hasPerson"/>
+        <Class IRI="#Community"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isManufacturerOf"/>
+        <Class IRI="#Company"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#isPersonOf"/>
+        <Class IRI="#Person"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#packageRequiredBy"/>
+        <Class IRI="#Package"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#packageRequires"/>
+        <Class IRI="#Package"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasManufacturer"/>
+        <Class IRI="#Company"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#hasPerson"/>
+        <Class IRI="#Person"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#isPersonOf"/>
+        <Class IRI="#Community"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#packageRequiredBy"/>
+        <Class IRI="#Package"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#packageRequires"/>
+        <Class IRI="#Package"/>
+    </ObjectPropertyRange>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#companyName"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#identifierValue"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#ipv4Address"/>
+        <DataProperty IRI="#identifierValue"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#macAddress"/>
+        <DataProperty IRI="#identifierValue"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#macAddressPrefix"/>
+        <DataProperty IRI="#identifierValue"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#packageName"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#personFullName"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#serialNumber"/>
+        <DataProperty IRI="#identifierValue"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#uri"/>
+        <DataProperty IRI="#identifierValue"/>
+    </SubDataPropertyOf>
+    <SubDataPropertyOf>
+        <DataProperty IRI="#version"/>
+        <DataProperty abbreviatedIRI=":topDataProperty"/>
+    </SubDataPropertyOf>
+    <FunctionalDataProperty>
+        <DataProperty IRI="#identifierValue"/>
+    </FunctionalDataProperty>
+    <FunctionalDataProperty>
+        <DataProperty IRI="#ipv4Address"/>
+    </FunctionalDataProperty>
+    <FunctionalDataProperty>
+        <DataProperty IRI="#macAddress"/>
+    </FunctionalDataProperty>
+    <FunctionalDataProperty>
+        <DataProperty IRI="#uri"/>
+    </FunctionalDataProperty>
+    <FunctionalDataProperty>
+        <DataProperty IRI="#version"/>
+    </FunctionalDataProperty>
+    <DataPropertyDomain>
+        <DataProperty IRI="#identifierValue"/>
+        <Class IRI="#Identifiers"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#macAddress"/>
+        <Class IRI="#MacAddress"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#packageName"/>
+        <Class IRI="#Package"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#serialNumber"/>
+        <Class IRI="#Hardware"/>
+    </DataPropertyDomain>
+    <DataPropertyDomain>
+        <DataProperty IRI="#uri"/>
+        <Class IRI="#URI"/>
+    </DataPropertyDomain>
+    <DataPropertyRange>
+        <DataProperty IRI="#identifierValue"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#ipv4Address"/>
+        <Datatype abbreviatedIRI="xsd:hexBinary"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#macAddress"/>
+        <Datatype abbreviatedIRI="xsd:hexBinary"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#macAddressPrefix"/>
+        <Datatype abbreviatedIRI="xsd:hexBinary"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#packageName"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#serialNumber"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#uri"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <DataPropertyRange>
+        <DataProperty IRI="#version"/>
+        <Datatype abbreviatedIRI="xsd:string"/>
+    </DataPropertyRange>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#Eeprom</IRI>
+        <Literal datatypeIRI="&xsd;string">What resides in EEPROM is BIOS or in the case of embedded devices, an OS.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#identifierValue</IRI>
+        <Literal datatypeIRI="&xsd;string">The value for an identifier class instance. The type may differ between identifier class types.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#ipv4Address</IRI>
+        <Literal datatypeIRI="&xsd;string">This data property refers to the native hex format for an IPv4 address.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#macAddress</IRI>
+        <Literal datatypeIRI="&xsd;string">The hex format of a MAC address.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:comment"/>
+        <IRI>#uri</IRI>
+        <Literal datatypeIRI="&xsd;string">A URI.</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.0.0.1469) http://owlapi.sourceforge.net -->
+
