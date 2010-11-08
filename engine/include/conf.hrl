@@ -14,4 +14,4 @@
 %%
 %% @end
 %% --------------------------
--define(CONF(ITEM), .organic.conf:get_item(ITEM)).
+-define(CONF(ITEM), .umberum.conf:get_item(ITEM)).

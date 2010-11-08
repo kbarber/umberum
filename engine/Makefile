@@ -1,27 +1,27 @@
 # Copyright 2010 Bob.sh Limited
 
 all: 
-	@mkdir -p ebin/organic/logger
-	@mkdir -p ebin/organic/logger/relp
-	@mkdir -p ebin/organic/logger/syslog_3164
-	@mkdir -p ebin/organic/logger/route
-	@mkdir -p ebin/organic/logger/file
-	@mkdir -p ebin/organic/logger/mongodb
-	@mkdir -p ebin/organic/logger/tokenizer
-	@mkdir -p ebin/organic/event
-	@mkdir -p ebin/organic/event/proc
+	@mkdir -p ebin/umberum/logger
+	@mkdir -p ebin/umberum/logger/relp
+	@mkdir -p ebin/umberum/logger/syslog_3164
+	@mkdir -p ebin/umberum/logger/route
+	@mkdir -p ebin/umberum/logger/file
+	@mkdir -p ebin/umberum/logger/mongodb
+	@mkdir -p ebin/umberum/logger/tokenizer
+	@mkdir -p ebin/umberum/event
+	@mkdir -p ebin/umberum/event/proc
 	@erl -make
 
 	@erlc 	-pz ../emongo/ebin \
 		-Iebin/ \
 		-o ebin \
-		ebin/organic-1.rel 
+		ebin/umberum-1.rel 
 
 clean: 
 	rm -f ebin/*.beam
 	rm -f ebin/*.boot
 	rm -f ebin/*.script
-	rm -fr ebin/organic
+	rm -fr ebin/umberum
 	rm -fr doc/api
 	rm -f erl_crash*
 

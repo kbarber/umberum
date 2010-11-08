@@ -18,7 +18,7 @@ A rule that tokenizes syslog_3164 packets received on RELP streams:
 {
     "rule": {
         "name": "Tokenize RELP packets as Syslog 3164 packets",
-        "match": [ "==", "organic.network_protocol", "relp" ],
+        "match": [ "==", "umberum.network_protocol", "relp" ],
         "do": [
             {
                 "action": "tokenize",
@@ -75,11 +75,11 @@ A rule to store syslog data out of RELP streams to mongodb:
 {
     "rule": {
         "name": "Store RELP packets in mongodb",
-        "match": [ "==", "organic.network_protocol", "relp" ],
+        "match": [ "==", "umberum.network_protocol", "relp" ],
         "do": [
             {
                 "action": "store.mongodb",
-                "db": "organic",
+                "db": "umberum",
                 "collection": "relp_logs",
                 "keys": "syslog_3164.*"
             }

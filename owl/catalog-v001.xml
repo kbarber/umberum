@@ -2,8 +2,8 @@
 <catalog id="XML Catalog File (see http://www.oasis-open.org/committees/entity/spec-2001-08-06.html) - Created By Protege 4" prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <uri id="Imports Wizard Entry" name="http://usefulinc.com/ns/doap#" uri="lib/doap.owl"/>
     <uri id="Imports Wizard Entry" name="http://xmlns.com/foaf/0.1/" uri="lib/foaf-20100101.owl"/>
-    <group id="Folder Repository, directory=/home/kbarber/Development/organic-owl, Auto-Update=true" prefer="public" xml:base="">
-        <uri id="Automatically generated entry, Timestamp=1285891029262" name="http://organicit.org/ontologies/rbac.owl" uri="rbac.owl"/>
-        <uri id="Automatically generated entry, Timestamp=1285891029262" name="http://organicit.org/ontologies/Universe.owl" uri="Universe.owl"/>
+    <group id="Folder Repository, directory=/home/kbarber/Development/umberum-owl, Auto-Update=true" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1285891029262" name="http://umberum.com/ontologies/rbac.owl" uri="rbac.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1285891029262" name="http://umberum.com/ontologies/Universe.owl" uri="Universe.owl"/>
     </group>
 </catalog>

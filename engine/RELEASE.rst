@@ -20,8 +20,8 @@ may move to a proper tracker.
   of the cost of starting processes but it feel more 'right' to have
   a pool of workers ready to act that aren't bound to a single requester
   process. Examples are:
-   - organic.logger.syslog_3164.decode_fsm
-   - organic.logger.route.route_fsm.erl
+   - umberum.logger.syslog_3164.decode_fsm
+   - umberum.logger.route.route_fsm.erl
   I think process groups (using pg2) is the way to go, using a supervisor
   to restart broken processes and keeping a constant number of pooled 
   processes. Of course, how does this pool scale under different load one asks ...
@@ -65,7 +65,7 @@ Here is a rough list of the current features for this release.
 * Created Emakefile used by emake to build Erlang specific bits
 * Created Makefile for complete build purposes as emake is not holistic enough,
   and make is more familiar to the average punter
-* organic.conf module and conf.hrl header provide macros and functions for 
+* umberum.conf module and conf.hrl header provide macros and functions for 
   accessing basic global configuration. Currently this configuration is provided
   in sys.config, but may change. The abstraction from mechanism is provided for
   this in the ?CONF macro.

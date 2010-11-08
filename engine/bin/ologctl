@@ -4,7 +4,7 @@
 
 FQDN=`hostname -f 2>/dev/null || echo "localhost"`
 
-OLOG_BOOT=organic-1
+OLOG_BOOT=umberum-1
 
 ERL_MAX_PIDS=100000000
 ERL_NAME=ologd
@@ -63,7 +63,7 @@ ctlexec () {
         -noinput \
         -hidden \
         -pz $ERL_CODEPATH \
-        -s organic.ctl \
+        -s umberum.ctl \
         -config sys \
         -setcookie $ERL_COOKIE \
         -extra $ERL_NODE $COMMAND
