@@ -37,14 +37,6 @@ init(_Args) ->
                   supervisor,                              % Type     = worker | supervisor
                   []                                       % Modules  = [Module] | dynamic
                 },
-                % Tokenizer supervisor
-                {   umberum.logger.tokenizer.tokenizer_sup,
-                  {.umberum.logger.tokenizer.tokenizer_sup,start_link,[]},
-                  permanent,                               % Restart  = permanent | transient | temporary
-                  infinity,                                % Shutdown = brutal_kill | int() >= 0 | infinity
-                  supervisor,                              % Type     = worker | supervisor
-                  []                                       % Modules  = [Module] | dynamic
-                },
                 % Route supervisor
                 {   umberum.logger.route.route_sup,
                   {.umberum.logger.route.route_sup,start_link,[]},

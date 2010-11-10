@@ -91,8 +91,8 @@ process(["etop"]) ->
 
 process(["mnesia", Arg]) when is_list(Arg) ->
     case catch .mnesia:system_info(list_to_atom(Arg)) of
-	{'EXIT', Error} -> .io:format("Error: ~p~n", [Error]);
-	Return -> .io:format("~p~n", [Return])
+	    {'EXIT', Error} -> .io:format("Error: ~p~n", [Error]);
+	    Return -> .io:format("~p~n", [Return])
     end,
     ok.
 

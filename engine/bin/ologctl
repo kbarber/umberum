@@ -14,7 +14,7 @@ ERL_COOKIE=changeme
 ERL_ASYNC_THREADS=1
 ERL_KERNEL_POLL=true
 
-start_olog() {
+start() {
     erl -name $ERL_NODE \
         -pz $ERL_CODEPATH \
         +P $ERL_MAX_PIDS \
@@ -28,7 +28,7 @@ start_olog() {
         -boot $OLOG_BOOT
 }
 
-startfg_olog() {
+startfg() {
     erl -name $ERL_NODE \
         -pz $ERL_CODEPATH \
         +P $ERL_MAX_PIDS \
@@ -75,10 +75,10 @@ stop_olog() {
 
 case "$1" in
     start)
-        start_olog
+        start
         ;;
     startfg)
-        startfg_olog
+        startfg
         ;;
     stop)
         ctl stop
