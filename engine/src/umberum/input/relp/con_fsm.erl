@@ -10,7 +10,7 @@
 %% --------------------------
 % 
 
--module(.umberum.logger.relp.con_fsm).
+-module(.umberum.input.relp.con_fsm).
 
 -behaviour(gen_fsm).
 
@@ -85,7 +85,7 @@ init([]) ->
     % Now we own the socket
     .inet:setopts(Socket, [{active, once}, {packet, raw}, binary]),
     {ok, {IP, _Port}} = .inet:peername(Socket),
-    {ok, SessionPid} = .umberum.logger.relp.session_sup:start_client(Socket),
+    {ok, SessionPid} = .umberum.input.relp.session_sup:start_client(Socket),
     link(SessionPid),
     {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid}};
 'WAIT_FOR_SOCKET'(Other, State) ->

@@ -6,7 +6,7 @@
 %% --------------------------
 % 
 
--module(.umberum.logger.relp.session_fsm).
+-module(.umberum.input.relp.session_fsm).
 
 -behaviour(gen_fsm).
 
@@ -205,12 +205,15 @@ handle_info({'EXIT',From,_}, StateName, #state{socket=Socket,syslog=Syslog} = St
     % This is how we receive signals from the connection process when it stops
     % In this case, we just stop as well.
     case From of
-	Syslog ->
-	    {ok, SyslogPid} = .umberum.logger.relp.syslog_sup:start_client(Socket),
-	    link(SyslogPid),
-	    {next_state, StateName, #state{socket=Socket,syslog=SyslogPid}};
-	_Other -> 
-	    {stop, normal, StateData}
+	    Syslog ->
+            % If it comes from the syslog process, restart the syslog process
+	        {ok, SyslogPid} = .umberum.logger.syslog_3164.decode_sup:start_client(),
+	        link(SyslogPid),
+	        {next_state, StateName, #state{socket=Socket,syslog=SyslogPid}};
+	    _Other -> 
+            % This implies the stop is coming from the con_fsm, so lets just
+            % stop.
+	        {stop, normal, StateData}
     end;
 handle_info(_Info, StateName, StateData) ->
     {noreply, StateName, StateData}.

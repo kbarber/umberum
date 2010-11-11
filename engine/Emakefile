@@ -32,3 +32,8 @@
     [debug_info,{outdir,"ebin/umberum/event"},{i,'include'}]}.
 {'src/umberum/event/proc/*',
     [debug_info,{outdir,"ebin/umberum/event/proc"},{i,'include'}]}.
+
+%% Input plugin - RELP
+
+{'src/umberum/input/relp/*',
+    [debug_info,{outdir,"ebin/umberum/input/relp"},{i,'include'}]}.

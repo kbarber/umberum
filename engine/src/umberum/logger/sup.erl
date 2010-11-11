@@ -21,14 +21,6 @@ init(_Args) ->
     {ok,
         {_SupFlags = {one_for_one, ?MAX_RESTART, ?MAX_TIME},
             [
-                % RELP Listener
-                {   .umberum.logger.relp.relp_sup,           % Id       = internal id
-                  {.umberum.logger.relp.relp_sup,start_link,[]}, % StartFun = {M, F, A}
-                  permanent,                               % Restart  = permanent | transient | temporary
-                  infinity,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
-                  supervisor,                                  % Type     = worker | supervisor
-                  [.umberum.logger.relp.relp_sup]          % Modules  = [Module] | dynamic
-                },
                 % Syslog supervisor
                 {   umberum.logger.syslog_3164.decode_sup,
                   {.umberum.logger.syslog_3164.decode_sup,start_link,[]},

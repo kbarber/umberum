@@ -2,7 +2,6 @@
 
 all: 
 	@mkdir -p ebin/umberum/logger
-	@mkdir -p ebin/umberum/logger/relp
 	@mkdir -p ebin/umberum/logger/syslog_3164
 	@mkdir -p ebin/umberum/logger/route
 	@mkdir -p ebin/umberum/logger/file
@@ -10,6 +9,8 @@ all:
 	@mkdir -p ebin/umberum/logger/tokenizer
 	@mkdir -p ebin/umberum/event
 	@mkdir -p ebin/umberum/event/proc
+	@mkdir -p ebin/umberum/input
+	@mkdir -p ebin/umberum/input/relp
 	@erl -make
 
 	@erlc 	-pz ../emongo/ebin \

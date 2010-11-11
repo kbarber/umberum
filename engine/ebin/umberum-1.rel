@@ -7,6 +7,8 @@
 %%
 %% Besides the normal items, we are loading:
 %% - umberum.logger: our code
+%% - umberum.event: event processing engine
+%% - umberum.input.relp: RELP input plugin
 %% - emongo: the mongodb client
 %% 
 %% @end
@@ -19,5 +21,6 @@
   {sasl, "2.1.9.2"},
   {umberum.logger, "1"},
   {umberum.event, "1"},
+  {umberum.input.relp, "1"},
   {emongo, "0.0.6"}]
 }.

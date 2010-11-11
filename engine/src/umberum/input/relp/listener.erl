@@ -8,8 +8,7 @@
 %% TODO: ipv6 support is possible but requires a seperate listener I believe.
 %% --------------------------
 
--module(.umberum.logger.relp.listener).
--author('saleyn@gmail.com').
+-module(.umberum.input.relp.listener).
 
 -behaviour(gen_server).
 
@@ -114,7 +113,7 @@ handle_info({inet_async, ListSock, Ref, {ok, CliSocket}},
 
         %% New client connected - spawn a new process using the simple_one_for_one
         %% supervisor.
-        {ok, Pid} = .umberum.logger.relp.con_sup:start_client(),
+        {ok, Pid} = .umberum.input.relp.con_sup:start_client(),
         .gen_tcp:controlling_process(CliSocket, Pid),
         %% Instruct the new FSM that it owns the socket.
         Module:set_socket(Pid, CliSocket),
