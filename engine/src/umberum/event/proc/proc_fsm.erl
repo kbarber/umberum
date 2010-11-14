@@ -63,9 +63,6 @@ init([]) ->
         [Event,Callback, .uuid:to_string(Uuid)]),
     Callback ! {ok, process_id, Uuid},
 
-    % Insert received data into mongo database
-    %.emongo:insert(emongo_pool, ?CONF(mongodb_output_collection), Event),
-
     {next_state, 'NEW', #state{id = Uuid, event = Event}};
 'NEW'(Msg,State) ->
     ?DEBUGF("Received message: ~p~n", [Msg]),

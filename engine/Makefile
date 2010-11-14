@@ -26,5 +26,11 @@ clean:
 	rm -fr doc/api
 	rm -f erl_crash*
 
-test:
-	echo "Testing ..."
+test: all
+	mkdir test_reports
+	@erl	-pa ebin \
+		-smp auto \
+		-noshell \
+		-noinput \
+		-s umberum_alltests \
+		start
