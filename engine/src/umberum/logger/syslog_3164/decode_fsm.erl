@@ -84,20 +84,6 @@ init([]) ->
 	            content = Content},
 
             .gen_fsm:send_event(Router, {log, SR}),
-
-            % Encode into list for event engine
-            Event2 = [
-                {'syslog_3164.facility', .umberum.util:bin_to_int(Priority) div 8},
-                {'syslog_3164.severity', .umberum.util:bin_to_int(Priority) rem 8},
-                {'syslog_3164.timestamp', binary_to_list(Timestamp)},
-                {'syslog_3164.hostname', binary_to_list(Hostname)},
-                {'syslog_3164.tag', binary_to_list(Tag)},
-                {'syslog_3164.procid', binary_to_list(Procid)},
-                {'syslog_3164.content', Content}
-            ],
-
-            Eventmerged = .lists:keymerge(1, .lists:keysort(1, Event), .lists:keysort(1,Event2)),
-            .umberum.event:process(Eventmerged),
             ok;
         {match, _Capture} -> 
             ?ERR("Unable to decode packet. Ignoring.");

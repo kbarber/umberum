@@ -59,7 +59,7 @@ init([]) ->
 %% --------------------------
 'NEW'({process,Event,callback,Callback},_State) ->
     Uuid = .uuid:v4(),
-    ?DEBUGF("Received event: ~p from pid: ~p assigning id: ~p~n", 
+    ?DEBUGF("Received event: ~p ~n from pid: ~p assigning id: ~p~n", 
         [Event,Callback, .uuid:to_string(Uuid)]),
     Callback ! {ok, process_id, Uuid},
 

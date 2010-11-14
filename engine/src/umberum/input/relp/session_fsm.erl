@@ -153,6 +153,9 @@ init([Socket]) ->
         {'relp.rx_port',Localport}
     ],
 
+    % Send to event processor
+    .umberum.event:process(Event),
+
     % Send event to syslog_3164 decoder
     .gen_fsm:send_event(Syslog, {msg, Event}),
 
