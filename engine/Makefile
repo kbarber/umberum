@@ -27,7 +27,7 @@ clean:
 	rm -f erl_crash*
 
 test: all
-	mkdir test_reports
+	@mkdir -p test_reports
 	@erl	-pa ebin \
 		-smp auto \
 		-noshell \
