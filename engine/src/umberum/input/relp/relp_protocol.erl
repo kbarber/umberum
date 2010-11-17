@@ -65,7 +65,7 @@ decode(Packet) ->
                                 10 -> 
                                     % TODO: deal with instances where there is multiple data per packet
                                     Previous = [{relp,Txnr,Command,DataLen,binary_part(CurData, 0, DataLen)}],
-                                    Remainder = binary_part(Data, DataLen+2, size(Data)-(DataLen+2)),
+                                    Remainder = binary_part(Data, DataLen+1, size(Data)-(DataLen+1)),
                                     decode(Previous, Remainder);
                                 Other ->
                                     {error, "Mismatched trailer.", Other}
@@ -80,5 +80,5 @@ decode(Packet) ->
 
 decode(_Previous, _Remainder) ->
     % TODO: deal with this case
-    ok.
+    .lists:append(_Previous, decode(_Remainder)).
 
