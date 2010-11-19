@@ -79,6 +79,5 @@ decode(Packet) ->
     end.
 
 decode(_Previous, _Remainder) ->
-    % TODO: deal with this case
     .lists:append(_Previous, decode(_Remainder)).
 
