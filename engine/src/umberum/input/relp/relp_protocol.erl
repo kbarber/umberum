@@ -54,8 +54,7 @@ decode(Packet) ->
                                 0 ->
                                     [{relp,Txnr,Command,DataLen,Data}];
                                 _Other ->
-                                    % TODO: We're missing data, switch states so we can receive the rest
-                                    {error, "Size is greater then data section. Unhandled case."}
+                                    {remainder, Packet}
                             end;
                         false ->
                             % This packet contains multiple parts. Process the first, and then feed the
