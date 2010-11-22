@@ -54,7 +54,7 @@ decode(Packet) ->
                                 0 ->
                                     [{relp,Txnr,Command,DataLen,Data}];
                                 _Other ->
-                                    {remainder, Packet}
+                                    [{remainder, Packet}]
                             end;
                         false ->
                             % This packet contains multiple parts. Process the first, and then feed the
