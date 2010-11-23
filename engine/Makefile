@@ -34,3 +34,11 @@ test: all
 		-noinput \
 		-s umberum_alltests \
 		start
+
+docs:
+	@mkdir -p doc/api/
+	@erl	-noshell \
+		-run edoc_run \
+		application "umberum" "src" '[{dir, "doc/api"}]' \
+		-s init stop
+

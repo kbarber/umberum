@@ -5,3 +5,4 @@ ebin/*.beam
 erl_crash.dump
 *~
 test_reports/
+doc/api

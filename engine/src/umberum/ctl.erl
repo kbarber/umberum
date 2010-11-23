@@ -15,9 +15,9 @@
 	]).
 
 %%-----------------------------
-%% Module
+%% @doc Start Umberum.
+%% @end
 %%-----------------------------
-
 start() ->
     case .init:get_plain_arguments() of
 	[SNode | Args] ->
@@ -53,15 +53,19 @@ start() ->
 	    halt()
     end.
 
+%%-----------------------------
+%% @doc Initialise umberum.ctl module.
+%% @end
+%%-----------------------------
 init() ->
     .ets:new(kod_ctl_cmds, [named_table, set, public]),
     .ets:new(kod_ctl_host_cmds, [named_table, set, public]).
 
 
 %%-----------------------------
-%% Process
+%% @doc Process a command.
+%% @end
 %%-----------------------------
-
 process(["stop"]) ->
     .init:stop();
 

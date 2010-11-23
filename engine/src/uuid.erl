@@ -1,4 +1,3 @@
-%% @copyright 2008 Travis Vachon
 %%  
 %% Redistribution and use in source and binary forms, with or without
 %% modification, are permitted provided that the following conditions are
@@ -27,6 +26,7 @@
 %% NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 %% SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 %%  
+%% @copyright 2008 Travis Vachon
 %% @doc This module provides functionality for generation of uuid v4 data.
 %%
 %% This code was originally developed by Travis Vachon and adapted for use by 
@@ -39,6 +39,7 @@
 -export([v4/0, to_string/1, get_parts/1]).
 -import(random).
 
+%% @spec v4()->binary()
 %% @doc Returns a verson 4 UUID in binary.
 v4() ->
     v4(rand(48), rand(12), rand(32), rand(30)).
@@ -57,6 +58,7 @@ rand(Length) ->
 to_string(U) ->
     lists:flatten(io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", get_parts(U))).
 
+%% @spec get_parts(Uuid)-> {TL, TM, THV, CSR, CSL, N}
 %% @doc Break down a UUID and return its individual parts.
 get_parts(<<TL:32, TM:16, THV:16, CSR:8, CSL:8, N:48>>) ->
     [TL, TM, THV, CSR, CSL, N].

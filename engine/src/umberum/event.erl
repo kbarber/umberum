@@ -13,12 +13,15 @@
 
 -include_lib("include/common.hrl").
 
+%% --------------------------
+%% @spec process(Event) -> {ok, integer()}
 %% @doc Send event to the processing engine.
 %%
 %% This function receives an Event object and passes it to the processing 
 %% engine in an asynchronous manner.
 %%
 %% @end
+%% --------------------------
 process(Event) ->
     ?DEBUGF("Event: ~p~n", [Event]),
 

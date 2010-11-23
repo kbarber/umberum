@@ -13,6 +13,7 @@
 -export([bin_to_int/1]).
 
 %%-------------------------------------------------------------------------
+%% @spec bin_to_int(Binary) -> integer()
 %% @doc Translate a number stored in binary to an integer.
 %% @end
 %%-------------------------------------------------------------------------

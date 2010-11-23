@@ -67,7 +67,7 @@ decode(Packet) ->
                                     Remainder = binary_part(Data, DataLen+1, size(Data)-(DataLen+1)),
                                     decode(Previous, Remainder);
                                 Other ->
-                                    {error, "Mismatched trailer.", Other}
+                                    {error, "Mismatched trailer", Other}
                             end
                     end
             end;
