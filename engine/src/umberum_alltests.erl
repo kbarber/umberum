@@ -3,6 +3,7 @@
 %% @doc Primary entry point for tests.
 %%
 %% @end
+%% @private
 %% --------------------------
 
 -module(umberum_alltests).
