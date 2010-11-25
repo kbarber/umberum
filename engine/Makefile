@@ -39,6 +39,6 @@ docs:
 	@mkdir -p doc/api/
 	@erl	-noshell \
 		-run edoc_run \
-		application "umberum" "src" '[{dir, "doc/api"}]' \
+		application "umberum" "src" '[{dir, "doc/api"},{overview,"doc/overview.edoc"}]' \
 		-s init stop
 
