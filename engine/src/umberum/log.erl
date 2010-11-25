@@ -17,7 +17,7 @@
 %% @end
 %%-------------------------------------------------------------------------
 setup() ->
-    .error_logger:logfile({open,?CONF(ologd_log)}).
+    .error_logger:logfile({open,?CONF(log_file)}).
 
 %%-------------------------------------------------------------------------
 %% @doc Log an error message with formatting.
@@ -68,11 +68,17 @@ info(Msg) ->
 %% @end
 %%-------------------------------------------------------------------------
 debug(Msg,Fmt) ->
-    .error_logger:info_msg("DEBUG: " ++ Msg,Fmt).
+    case ?CONF(log_debug) of
+        true -> .error_logger:info_msg("DEBUG: " ++ Msg,Fmt);
+        _Other -> ok
+    end.
 
 %%-------------------------------------------------------------------------
 %% @doc Log a debug message.
 %% @end
 %%-------------------------------------------------------------------------
 debug(Msg) ->
-    .error_logger:info_msg("DEBUG: " ++ Msg).
+    case ?CONF(log_debug) of
+        true -> .error_logger:info_msg("DEBUG: " ++ Msg);
+        _Other -> ok
+    end.

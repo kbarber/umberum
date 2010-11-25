@@ -1,10 +1,11 @@
 %% --------------------------
 %% @copyright 2010 Bob.sh Limited
 %% @doc This is a state based connection handler for receiving and parsing
-%% RELP based protocol logging traffic. See here for reference:
+%% RELP based protocol logging traffic. See here for the protocol reference:
 %%
-%% http://www.rsyslog.com/doc/relp.html
-%% http://www.librelp.com/relp.html
+%% [http://www.rsyslog.com/doc/relp.html]
+%%
+%% [http://www.librelp.com/relp.html]
 %% 
 %% @end
 %% --------------------------
@@ -31,7 +32,8 @@
 -record(state, {
                 socket,    % client socket
                 addr,      % client address
-                session    % session pid
+                session,   % session pid
+                last_data  % last_data
                 }).
 
 %%%------------------------------------------------------------------------
@@ -87,21 +89,53 @@ init([]) ->
     {ok, {IP, _Port}} = .inet:peername(Socket),
     {ok, SessionPid} = .umberum.input.relp.session_sup:start_client(Socket),
     link(SessionPid),
-    {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid}};
+    {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid, last_data = <<>>}};
 'WAIT_FOR_SOCKET'(Other, State) ->
     ?ERRF("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
     %% Allow to receive async messages
     {next_state, 'WAIT_FOR_SOCKET', State}.
 
 %% Notification event coming from client
-'WAIT_FOR_DATA'({data, Data}, #state{session=Session} = State) ->
+'WAIT_FOR_DATA'({data, Data}, #state{session=Session,last_data=LastData} = State) ->
     ?DEBUGF("RCV: ~p~n", [binary_to_list(Data)]),
-    process_packet(Data, Session),
-    {next_state, 'WAIT_FOR_DATA', State};
+
+    CombinedData = <<LastData/binary, Data/binary>>,
+
+    case process_packet(CombinedData, Session) of
+        ok ->
+            {next_state, 'WAIT_FOR_DATA', State#state{last_data = <<>>}};
+        {more, _Length} ->
+            {next_state, 'WAIT_FOR_DATA', State#state{last_data=CombinedData}}
+    end;
 
 'WAIT_FOR_DATA'(Data, State) ->
     ?WARNF("~p Ignoring data: ~p\n", [self(), Data]),
     {next_state, 'WAIT_FOR_DATA', State}.
+    
+
+process_packet(Data, Session) ->
+    process_packet_r(.umberum.input.relp.relp_protocol:decode(Data), Session).
+
+process_packet_r({ok,RelpFrame,Rest}, Session) ->
+    {relp,Txnr,Command,DataLen,Data} = RelpFrame,
+    PR = #relp{
+        txnr = Txnr,
+        command = Command,
+        datalen = DataLen,
+        data = Data},
+    .gen_fsm:send_event(Session, {Command, PR}),
+
+    case size(Rest) > 0 of
+        true -> process_packet(Rest,Session);
+        false -> ok
+    end;
+
+process_packet_r({more, Length}, _Session) ->
+    {more, Length};
+
+process_packet_r({error, Msg, _Data}, _Session) ->
+    ?ERRF("Error in RELP decoder: ~p\n", Msg),
+    ok.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_event/3
@@ -149,72 +183,15 @@ handle_info({'EXIT',_,_}, _StateName, StateData) ->
 handle_info(_Info, StateName, StateData) ->
     {noreply, StateName, StateData}.
 
-process_packet(RawData, Session) ->
-    ?DEBUGF("PROCESSING(~p): [~p]~n", [size(RawData),RawData]),
 
-    HeaderRe = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
-    ReOpts = [unicode,{capture,all,binary},dotall,ungreedy],
-    case .re:run(RawData,HeaderRe,ReOpts) of
-        {match, [_, Txnr, Command, DataLenBin, Data]} -> 
-	        DataLen = .umberum.util:bin_to_int(DataLenBin),
-	        % Lets populate a relp_packet record with the unpacked data
-	        PR = #relp{
-	            txnr = .umberum.util:bin_to_int(Txnr),
-	            command = binary_to_atom(Command, latin1),
-                datalen = .umberum.util:bin_to_int(DataLenBin)},
 
-            ?DEBUGF("Txnr: ~p Command: ~p Datalen: ~p Data: ~p size(Data): ~p~n",
-                [PR#relp.txnr,PR#relp.command,PR#relp.datalen,Data,size(Data)]),                
 
-	        % Check to see if the length matches the data size, indicating a single
-	        % RELP packet in this transmission.
-	        case DataLen+1 == size(Data) of
-                true -> 
-                    case .binary:last(Data) of
-                        10 ->
-                            .gen_fsm:send_event(Session, 
-                                {PR#relp.command, 
-                                 PR#relp{data=binary_part(Data,0,DataLen)}
-                                });
-                        Other ->
-                            ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
-                    end;
-		        false -> 
-            	    case DataLen+1 > size(Data) of
-                		true ->
-                            case DataLen of
-                                0 ->
-                                    .gen_fsm:send_event(Session,
-                                        {PR#relp.command,
-                                        PR});
-                                _Other ->
-                                    % TODO: We're missing data, switch states so we can receive the rest
-                                    ?ERR("TODO: size is greater then data section. We cannot handle this case yet.~n")
-                            end;
-                        false ->
-                            % This packet contains multiple parts. Process the first, and then feed the
-                            % remainder back to this function for more processing.
-                            CurData = binary_part(Data, 0, DataLen+1),
-                            case .binary:last(CurData) of
-                                10 -> 
-                                    .gen_fsm:send_event(Session,
-                                        {PR#relp.command,
-                                        PR#relp{data=binary_part(CurData, 0, DataLen)}
-                                        }),
-                                    Remainder = binary_part(Data, DataLen+2, size(Data)-(DataLen+2)),
-                                    process_packet(Remainder, Session);
-                                Other ->
-                                    ?ERRF("No trailer found. Instead we found: ~p~n", [Other])
-                            end
-                    end,
-                    ok
-            end;
-        _Other ->
-            ?ERRF("Received packet does not look it is a RELP packet: [~p]. Ignoring.", [RawData])
-    end.
+
+    
+    
 
 %%-------------------------------------------------------------------------
-%% Func: terminate/3
+%% Func: terminate/3    
 %% Purpose: Shutdown the fsm
 %% Returns: any
 %% @private

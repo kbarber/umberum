@@ -54,7 +54,7 @@ init([Port, Module]) ->
     process_flag(trap_exit, true),
     Opts = [binary, {packet, raw}, {reuseaddr, true},
             {keepalive, true}, {backlog, 30}, {active, false},
-            inet],
+            inet6],
     case .gen_tcp:listen(Port, Opts) of
         {ok, Listen_socket} ->
             %%Create first accepting process
