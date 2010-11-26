@@ -2,6 +2,9 @@
 %% @copyright 2010 Bob.sh Limited
 %% @doc This is a state based session handler for the RELP protocol
 %%
+%% This process manages the session handling aspect of a transaction while
+%% con_fsm deals with the connection. Both work together to provide RELP 
+%% decoding facilities.
 %% @end
 %% --------------------------
 % 
@@ -13,18 +16,13 @@
 -include_lib("include/common.hrl").
 
 -export([start_link/1]).
-
-%% gen_fsm callbacks
 -export([init/1, handle_event/3,
          handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
-
-%% FSM States
 -export([
     'SESSION_STARTUP'/2,
     'SESSION_TRANSMISSION'/2
 ]).
 
-%% State record
 -record(state, {
                 socket,    % client socket
                 addr,      % client address
@@ -35,30 +33,19 @@
 -define(RELP_CAP, "~p rsp 92 200 OK~nrelp_version=0~nrelp_software=librelp,1.0.0,http://librelp.adiscon.com~ncommands=syslog~n").
 -define(RELP_OK, "~p rsp 6 200 OK~n").
 
-%%%------------------------------------------------------------------------
-%%% API
-%%%------------------------------------------------------------------------
-
 %%-------------------------------------------------------------------------
 %% @spec (Socket) -> {ok,Pid} | ignore | {error,Error}
 %% @doc To be called by the supervisor in order to start the server.
-%%      If init/1 fails with Reason, the function returns {error,Reason}.
-%%      If init/1 returns {stop,Reason} or ignore, the process is
-%%      terminated and the function returns {error,Reason} or ignore,
-%%      respectively.
 %% @end
 %%-------------------------------------------------------------------------
 start_link(Socket) ->
     .gen_fsm:start_link(?MODULE, [Socket], []).
 
-%%%------------------------------------------------------------------------
-%%% Callback functions from gen_server
-%%%------------------------------------------------------------------------
-
 %% --------------------------
 %% @doc 
 %%
 %% @end
+%% @private
 %% --------------------------
 init([Socket]) ->
     .process_flag(trap_exit, true),

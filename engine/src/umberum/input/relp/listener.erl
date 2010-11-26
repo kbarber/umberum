@@ -3,9 +3,6 @@
 %% @doc This listener is an async accept based TCP listener.
 %% 
 %% @end
-%% TODO: This module may be better of being generic so we can spawn many 
-%%       processes like it easily.
-%% TODO: ipv6 support is possible but requires a seperate listener I believe.
 %% --------------------------
 
 -module(.umberum.input.relp.listener).

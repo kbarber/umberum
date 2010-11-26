@@ -1,15 +1,13 @@
 %% --------------------------
 %% @copyright 2010 Bob.sh Limited
 %% @doc This is a state based connection handler for receiving and parsing
-%% RELP based protocol logging traffic. See here for the protocol reference:
+%% RELP based protocol logging traffic.
 %%
-%% [http://www.rsyslog.com/doc/relp.html]
-%%
-%% [http://www.librelp.com/relp.html]
-%% 
+%% This process manages the connection while session_fsm manages the session.
+%% Both work together to provide RELP decoding facilities. The actual decoding
+%% is provided by relp_protocol.
 %% @end
 %% --------------------------
-% 
 
 -module(.umberum.input.relp.con_fsm).
 
@@ -18,12 +16,8 @@
 -include_lib("include/common.hrl").
 
 -export([start_link/0, set_socket/2]).
-
-%% gen_fsm callbacks
 -export([init/1, handle_event/3,
          handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
-
-%% FSM States
 -export([
     'WAIT_FOR_SOCKET'/2,
     'WAIT_FOR_DATA'/2
@@ -36,17 +30,9 @@
                 last_data  % last_data
                 }).
 
-%%%------------------------------------------------------------------------
-%%% API
-%%%------------------------------------------------------------------------
-
 %%-------------------------------------------------------------------------
 %% @spec () -> {ok,Pid} | ignore | {error,Error}
 %% @doc To be called by the supervisor in order to start the server.
-%%      If init/1 fails with Reason, the function returns {error,Reason}.
-%%      If init/1 returns {stop,Reason} or ignore, the process is
-%%      terminated and the function returns {error,Reason} or ignore,
-%%      respectively.
 %% @end
 %%-------------------------------------------------------------------------
 start_link() ->
@@ -56,20 +42,13 @@ start_link() ->
 %% @doc 
 %%
 %% @end
+%% @private
 %% --------------------------
 set_socket(Pid, Socket) when is_pid(Pid), is_port(Socket) ->
     .gen_fsm:send_event(Pid, {socket_ready, Socket}).
 
-%%%------------------------------------------------------------------------
-%%% Callback functions from gen_server
-%%%------------------------------------------------------------------------
-
 %%-------------------------------------------------------------------------
-%% Func: init/1
-%% Returns: {ok, StateName, StateData}          |
-%%          {ok, StateName, StateData, Timeout} |
-%%          ignore                              |
-%%          {stop, StopReason}
+%% @doc Initialise.
 %% @private
 %%-------------------------------------------------------------------------
 init([]) ->
@@ -77,11 +56,9 @@ init([]) ->
     {ok, 'WAIT_FOR_SOCKET', #state{}}.
 
 %%-------------------------------------------------------------------------
-%% Func: StateName/2
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
-%% @private
+%% @doc The WAIT_FOR_SOCKET state awaits a new established socket to be passed
+%% to this process.
+%% @end
 %%-------------------------------------------------------------------------
 'WAIT_FOR_SOCKET'({socket_ready, Socket}, State) when is_port(Socket) ->
     % Now we own the socket
@@ -90,12 +67,17 @@ init([]) ->
     {ok, SessionPid} = .umberum.input.relp.session_sup:start_client(Socket),
     link(SessionPid),
     {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid, last_data = <<>>}};
+
 'WAIT_FOR_SOCKET'(Other, State) ->
     ?ERRF("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
     %% Allow to receive async messages
     {next_state, 'WAIT_FOR_SOCKET', State}.
 
-%% Notification event coming from client
+
+%%-------------------------------------------------------------------------
+%% @doc The WAIT_FOR_DATA state awaits a new packet from the socket.
+%% @end
+%%-------------------------------------------------------------------------
 'WAIT_FOR_DATA'({data, Data}, #state{session=Session,last_data=LastData} = State) ->
     ?DEBUGF("RCV: ~p~n", [binary_to_list(Data)]),
 
@@ -112,7 +94,12 @@ init([]) ->
     ?WARNF("~p Ignoring data: ~p\n", [self(), Data]),
     {next_state, 'WAIT_FOR_DATA', State}.
     
-
+%%-------------------------------------------------------------------------
+%% @doc Here we provide a recursive routine to iterate through a packet, using
+%% a RELP decoder to pull each frame out and forward it to the session process.
+%% @end
+%% @private
+%%-------------------------------------------------------------------------
 process_packet(Data, Session) ->
     process_packet_r(.umberum.input.relp.relp_protocol:decode(Data), Session).
 
@@ -138,33 +125,21 @@ process_packet_r({error, Msg}, _Session) ->
     ok.
 
 %%-------------------------------------------------------------------------
-%% Func: handle_event/3
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
+%% @doc Gets triggered on events.
 %% @private
 %%-------------------------------------------------------------------------
 handle_event(Event, StateName, StateData) ->
     {stop, {StateName, undefined_event, Event}, StateData}.
 
 %%-------------------------------------------------------------------------
-%% Func: handle_sync_event/4
-%% Returns: {next_state, NextStateName, NextStateData}            |
-%%          {next_state, NextStateName, NextStateData, Timeout}   |
-%%          {reply, Reply, NextStateName, NextStateData}          |
-%%          {reply, Reply, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}                          |
-%%          {stop, Reason, Reply, NewStateData}
+%% @doc Gets triggered on sync events.
 %% @private
 %%-------------------------------------------------------------------------
 handle_sync_event(Event, _From, StateName, StateData) ->
     {stop, {StateName, undefined_event, Event}, StateData}.
 
 %%-------------------------------------------------------------------------
-%% Func: handle_info/3
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
+%% @doc Gets triggered on info events.
 %% @private
 %%-------------------------------------------------------------------------
 handle_info({tcp, Socket, Bin}, StateName, #state{socket=Socket} = StateData) ->
@@ -181,19 +156,10 @@ handle_info({'EXIT',_,_}, _StateName, StateData) ->
     {stop, normal, StateData};
 
 handle_info(_Info, StateName, StateData) ->
-    {noreply, StateName, StateData}.
-
-
-
-
-
-    
-    
+    {noreply, StateName, StateData}.    
 
 %%-------------------------------------------------------------------------
-%% Func: terminate/3    
-%% Purpose: Shutdown the fsm
-%% Returns: any
+%% @doc Shuts down the fsm.
 %% @private
 %%-------------------------------------------------------------------------
 terminate(_Reason, _StateName, #state{socket=Socket}) ->
@@ -201,9 +167,7 @@ terminate(_Reason, _StateName, #state{socket=Socket}) ->
     ok.
 
 %%-------------------------------------------------------------------------
-%% Func: code_change/4
-%% Purpose: Convert process state when code is changed
-%% Returns: {ok, NewState, NewStateData}
+%% @doc Convert the process state when the code is changed.
 %% @private
 %%-------------------------------------------------------------------------
 code_change(_OldVsn, StateName, StateData, _Extra) ->
