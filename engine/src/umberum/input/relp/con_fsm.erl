@@ -133,7 +133,7 @@ process_packet_r({ok,RelpFrame,Rest}, Session) ->
 process_packet_r({more, Length}, _Session) ->
     {more, Length};
 
-process_packet_r({error, Msg, _Data}, _Session) ->
+process_packet_r({error, Msg}, _Session) ->
     ?ERRF("Error in RELP decoder: ~p\n", Msg),
     ok.
 

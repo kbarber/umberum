@@ -63,8 +63,8 @@ decode(Packet) ->
                         10 ->
                             {ok,{relp,Txnr,Command,DataLen,
                                 binary_part(Data,0,DataLen)},<<>>};
-                        Other ->
-                            {error, "Mismatched trailer", Other}
+                        _Other ->
+                            {error, "Mismatched trailer"}
                     end;
 		        false -> 
             	    case DataLen+1 > size(Data) of
@@ -87,13 +87,13 @@ decode(Packet) ->
                                         binary_part(Data, DataLen+1, 
                                             size(Data)-(DataLen+1))
                                     };
-                                Other ->
-                                    {error, "Mismatched trailer", Other}
+                                _Other ->
+                                    {error, "Mismatched trailer"}
                             end
                     end
             end;
-        {match, Other} ->
-            {error, "Regex matched but parameters did not", Other};
+        {match, _Other} ->
+            {error, "Regex matched but parameters did not"};
         _Other ->
             {error, "Invalid RELP packet"}
     end.
