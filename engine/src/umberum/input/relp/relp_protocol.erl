@@ -95,5 +95,5 @@ decode(Packet) ->
         {match, _Other} ->
             {error, "Regex matched but parameters did not"};
         _Other ->
-            {error, "Invalid RELP packet"}
+            {error, io_lib:format("Invalid RELP packet: ~p", [Packet])}
     end.

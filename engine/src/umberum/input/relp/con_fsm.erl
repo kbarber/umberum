@@ -134,7 +134,7 @@ process_packet_r({more, Length}, _Session) ->
     {more, Length};
 
 process_packet_r({error, Msg}, _Session) ->
-    ?ERRF("Error in RELP decoder: ~p\n", Msg),
+    ?ERRF("Error in RELP decoder: ~p\n", [Msg]),
     ok.
 
 %%-------------------------------------------------------------------------
@@ -174,7 +174,7 @@ handle_info({tcp, Socket, Bin}, StateName, #state{socket=Socket} = StateData) ->
 
 handle_info({tcp_closed, Socket}, _StateName,
             #state{socket=Socket, addr=Addr} = StateData) ->
-    ?INFOF("~p Client ~p disconnected.\n", [self(), Addr]),
+    ?INFOF("~p Client ~p disconnected.\n", [self(), .inet_parse:ntoa(Addr)]),
     {stop, normal, StateData};
 
 handle_info({'EXIT',_,_}, _StateName, StateData) ->

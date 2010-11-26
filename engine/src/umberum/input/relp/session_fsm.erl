@@ -91,8 +91,6 @@ init([Socket]) ->
     {ok, SyslogPid} = .umberum.logger.syslog_3164.decode_sup:start_client(),
     link(SyslogPid),
 
-    ?INFOF("New RELP session started. [sessionid=~p]~n",[Id]),
-
     {next_state, 'SESSION_TRANSMISSION', #state{socket=S,syslog=SyslogPid,session_id=Id}};
 'SESSION_STARTUP'({close, #relp{txnr=Txnr}}, #state{socket=S} = State)->
     %% This message type indicates the client wishes to close the connection.
