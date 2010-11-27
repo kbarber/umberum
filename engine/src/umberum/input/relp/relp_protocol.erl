@@ -54,7 +54,7 @@ decode(Packet) ->
 	        DataLen = .umberum.util:bin_to_int(RawDataLen),
 
 	        % Check to see if the length matches the data size, indicating a 
-            % single RELP packet in this transmission.
+          % single RELP packet in this transmission.
 	        case DataLen+1 == size(Data) of
                 true -> 
                     % Single RELP packet
@@ -95,5 +95,5 @@ decode(Packet) ->
         {match, _Other} ->
             {error, "Regex matched but parameters did not"};
         _Other ->
-            {error, io_lib:format("Invalid RELP packet: ~p", [Packet])}
+            {error, list_to_binary(.io_lib:format("Invalid RELP packet: ~p", [Packet]))}
     end.

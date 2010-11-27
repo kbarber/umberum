@@ -87,7 +87,10 @@ init([]) ->
         ok ->
             {next_state, 'WAIT_FOR_DATA', State#state{last_data = <<>>}};
         {more, _Length} ->
-            {next_state, 'WAIT_FOR_DATA', State#state{last_data=CombinedData}}
+            {next_state, 'WAIT_FOR_DATA', State#state{last_data = CombinedData}};
+        {error, Msg} ->
+            ?ERRF("Error in RELP decoder: ~p~nLast Data: ~p\n", [Msg, LastData]),
+            {next_state, 'WAIT_FOR_DATA', State#state{last_data = <<>>}}
     end;
 
 'WAIT_FOR_DATA'(Data, State) ->
@@ -117,12 +120,7 @@ process_packet_r({ok,RelpFrame,Rest}, Session) ->
         false -> ok
     end;
 
-process_packet_r({more, Length}, _Session) ->
-    {more, Length};
-
-process_packet_r({error, Msg}, _Session) ->
-    ?ERRF("Error in RELP decoder: ~p\n", [Msg]),
-    ok.
+process_packet_r(Other, _Session) -> Other.
 
 %%-------------------------------------------------------------------------
 %% @doc Gets triggered on events.
