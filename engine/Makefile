@@ -13,7 +13,7 @@ all:
 	@mkdir -p ebin/umberum/input/relp
 	@erl -make
 
-	@erlc 	-pz ../emongo/ebin \
+	@erlc 	-pz ../../emongo/ebin \
 		-Iebin/ \
 		-o ebin \
 		ebin/umberum-1.rel 

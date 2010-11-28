@@ -66,7 +66,8 @@ init([]) ->
     {ok, {IP, _Port}} = .inet:peername(Socket),
     {ok, SessionPid} = .umberum.input.relp.session_sup:start_client(Socket),
     link(SessionPid),
-    {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, session=SessionPid, last_data = <<>>}};
+    {next_state, 'WAIT_FOR_DATA', State#state{socket=Socket, addr=IP, 
+        session=SessionPid, last_data = <<>>}};
 
 'WAIT_FOR_SOCKET'(Other, State) ->
     ?ERRF("State: 'WAIT_FOR_SOCKET'. Unexpected message: ~p\n", [Other]),
@@ -75,21 +76,57 @@ init([]) ->
 
 
 %%-------------------------------------------------------------------------
-%% @doc The WAIT_FOR_DATA state awaits a new packet from the socket.
+%% @doc The WAIT_FOR_DATA state awaits a new packet from the socket, decodes it
+%% and sends each frame to the session handling part of the RELP decoder.
+%%
+%% Primarly we are expecting this kind of RELP data inside a packet:
+%%
+%% * n frames
+%% * n frames, 1 leading partial frame
+%% * 1 trailing partial frame, n frames
+%% * 1 trailing partial frame, n frames, 1 leading partial frame
+%% * 1 partial frame (trailing and leading)
+%%
+%% And we will deal with each scenario differently. For partials, we have to 
+%% keep data around to attempt to prefix it onto the next packet.
+%%
 %% @end
 %%-------------------------------------------------------------------------
-'WAIT_FOR_DATA'({data, Data}, #state{session=Session,last_data=LastData} = State) ->
+'WAIT_FOR_DATA'({data, Data}, 
+    #state{session=Session,last_data=LastData} = State) ->
+    
     ?DEBUGF("RCV: ~p~n", [binary_to_list(Data)]),
 
+    % Here we hopefully combine the last lead partial frame with the next 
+    % trialing one to make a complete frame.
     CombinedData = <<LastData/binary, Data/binary>>,
 
     case process_packet(CombinedData, Session) of
         ok ->
+            % If the packet is okay, get ready for another.
             {next_state, 'WAIT_FOR_DATA', State#state{last_data = <<>>}};
-        {more, _Length} ->
-            {next_state, 'WAIT_FOR_DATA', State#state{last_data = CombinedData}};
-        {error, Msg} ->
-            ?ERRF("Error in RELP decoder: ~p~nLast Data: ~p\n", [Msg, LastData]),
+        {more, _Length, Remainder} ->
+            % This indicates we have a leading partial frame that was cut off
+            % in the data section. In this case we know there is definately 
+            % more data so we stow away that data to be later prefixed to the
+            % next set of incoming data.
+            {next_state, 'WAIT_FOR_DATA', 
+                State#state{last_data = Remainder}};
+        {error, nomatch, Remainder} ->
+            % So this is either a legit error or a leading partial frame that
+            % was cut-off before the header could be established for a 'more'
+            % return. For now we'll assume its a leading frame and add it to be
+            % combined with the next packet for now.
+            %
+            % TODO: deal with states where the packet really is invalid. At the
+            % moment this behaviour will break the next packet as well.
+            {next_state, 'WAIT_FOR_DATA', 
+                State#state{last_data = Remainder}};
+        {error, Msg, Remainder} ->
+            % These states are genuine mismatches so fail out and don't try to
+            % combined anything.
+            ?ERRF("Error in RELP decoder: ~p~nLast Data: ~p\n", 
+                [Msg, Remainder]),
             {next_state, 'WAIT_FOR_DATA', State#state{last_data = <<>>}}
     end;
 
@@ -103,24 +140,25 @@ init([]) ->
 %% @end
 %% @private
 %%-------------------------------------------------------------------------
-process_packet(Data, Session) ->
-    process_packet_r(.umberum.input.relp.relp_protocol:decode(Data), Session).
+process_packet(Packet, Session) ->
+    case .umberum.input.relp.relp_protocol:decode(Packet) of
+        {ok,{relp,Txnr,Command,DataLen,Data},Rest} ->
+            PR = #relp{
+                txnr = Txnr,
+                command = Command,
+                datalen = DataLen,
+                data = Data},
+            .gen_fsm:send_event(Session, {Command, PR}),
 
-process_packet_r({ok,RelpFrame,Rest}, Session) ->
-    {relp,Txnr,Command,DataLen,Data} = RelpFrame,
-    PR = #relp{
-        txnr = Txnr,
-        command = Command,
-        datalen = DataLen,
-        data = Data},
-    .gen_fsm:send_event(Session, {Command, PR}),
-
-    case size(Rest) > 0 of
-        true -> process_packet(Rest,Session);
-        false -> ok
-    end;
-
-process_packet_r(Other, _Session) -> Other.
+            case size(Rest) > 0 of
+                true -> process_packet(Rest,Session);
+                false -> ok
+            end;
+        {error, Msg} ->
+            {error, Msg, Packet};
+        {more, Length} ->
+            {more, Length, Packet}
+    end.
 
 %%-------------------------------------------------------------------------
 %% @doc Gets triggered on events.
