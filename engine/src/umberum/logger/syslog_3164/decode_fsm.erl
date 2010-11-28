@@ -74,13 +74,45 @@ init([]) ->
     ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
     case .re:run(Data,HeaderRe,ReOpts) of
 	    {match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
+          Facility = case .umberum.util:bin_to_int(Priority) div 8 of
+            0 -> <<"kernel">>;
+            1 -> <<"user">>;
+            2 -> <<"mail">>;
+            3 -> <<"daemon">>;
+            4 -> <<"auth">>;
+            5 -> <<"syslog">>;
+            6 -> <<"lpr">>;
+            7 -> <<"news">>;
+            8 -> <<"uucp">>;
+            9 -> <<"cron">>;
+            10 -> <<"authpriv">>;
+            11 -> <<"ftp">>;
+            16 -> <<"local0">>;
+            17 -> <<"local1">>;
+            18 -> <<"local2">>;
+            19 -> <<"local3">>;
+            20 -> <<"local4">>;
+            21 -> <<"local5">>;
+            22 -> <<"local6">>;
+            24 -> <<"local7">>
+          end,
+          Severity = case .umberum.util:bin_to_int(Priority) rem 8 of
+            0 -> <<"kernel">>;
+            1 -> <<"user">>;
+            2 -> <<"mail">>;
+            3 -> <<"daemon">>;
+            4 -> <<"auth">>;
+            5 -> <<"syslog">>;
+            6 -> <<"lpr">>;
+            7 -> <<"news">>
+          end,
 	        SR = #syslog{
-	            facility = .umberum.util:bin_to_int(Priority) div 8,
-	            severity = .umberum.util:bin_to_int(Priority) rem 8,
-	            timestamp = binary_to_list(Timestamp),
-	            hostname = binary_to_list(Hostname),
-	            tag = binary_to_list(Tag),
-                procid = binary_to_list(Procid),
+	            facility = Facility,
+	            severity = Severity,
+	            timestamp = Timestamp,
+	            hostname = Hostname,
+	            tag = Tag,
+              procid = Procid,
 	            content = Content},
 
             .gen_fsm:send_event(Router, {log, SR}),

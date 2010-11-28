@@ -26,7 +26,8 @@
 ]).
 
 -record(state, {
-                source_proc
+                source_proc,
+                log_file
                }).
 
 %%%------------------------------------------------------------------------
@@ -53,27 +54,28 @@ start_link(SourceProc) ->
 init([SourceProc]) ->
     .pg2:join('umberum.logger.file.writer_fsm', self()),
     .process_flag(trap_exit, true),
-    {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
+    {ok,LogFile} = .file:open(?CONF(file_outputpath), [ write, append]),
+    {ok, 'RECEIVE', #state{source_proc=SourceProc, log_file=LogFile}}.
 
 %% --------------------------
-%% @doc 
+%% @doc Here we receive incoming records and using bit syntax store them in the
+%% log file.
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({write, SR}, State)->
-    % TODO: logging to one file isn't that useful
-    {ok,LogFile} = .file:open(?CONF(file_outputpath), [ write, append]),
-    .file:write(LogFile, list_to_binary(.io_lib:format("<data>~n"++
-	       .io_lib:format("  facility = ~p~n", [SR#syslog.facility])++
-	       .io_lib:format("  severity = ~p~n", [SR#syslog.severity])++
-	       .io_lib:format("  timestamp = ~p~n", [SR#syslog.timestamp])++
-	       .io_lib:format("  hostname = ~p~n", [SR#syslog.hostname])++
-	       .io_lib:format("  tag = ~p~n", [SR#syslog.tag])++
-	       .io_lib:format("  procid = ~p~n", [SR#syslog.procid])++
-	       .io_lib:format("  content = ~p~n", [SR#syslog.content])++
-	       "</data>~n",[]))),
-    .file:close(LogFile),
-    {next_state, 'RECEIVE', State};
+'RECEIVE'({write, SR}, #state{log_file=LogFile} = State)->
+  .file:write(LogFile, <<
+    "<data>\n",
+    "  facility = ", (SR#syslog.facility)/binary, "\n",
+    "  severity = ", (SR#syslog.severity)/binary, "\n",
+    "  timestamp = ", (SR#syslog.timestamp)/binary, "\n",
+    "  hostname = ", (SR#syslog.hostname)/binary, "\n",
+    "  tag = ", (SR#syslog.tag)/binary, "\n",
+    "  procid = ", (SR#syslog.procid)/binary, "\n",
+    "  content = ", (SR#syslog.content)/binary, "\n",
+    "</data>\n"
+  >>),
+  {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.
 

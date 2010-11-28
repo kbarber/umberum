@@ -69,7 +69,7 @@ init([SourceProc]) ->
 %% --------------------------
 'RECEIVE'({log, SR}, #state{writer=Writer, mongodb_writer=MongoWriter} = State)->
     .gen_fsm:send_event(Writer, {write, SR}),
-    .gen_fsm:send_event(MongoWriter, {write, SR}),
+    %.gen_fsm:send_event(MongoWriter, {write, SR}),
     {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
     {next_state, 'RECEIVE', State}.
