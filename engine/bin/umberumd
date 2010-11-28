@@ -10,8 +10,10 @@ ERL_NAME=umberumd
 ERL_NODE=$ERL_NAME@$FQDN
 ERL_CODEPATH="ebin/ ../emongo/ebin"
 ERL_COOKIE=changeme
-ERL_ASYNC_THREADS=1
-ERL_KERNEL_POLL=true
+
+# For best performance set this value to the number of cpus your system has
+ERL_ASYNC_THREADS=2
+ERL_KERNEL_POLL=false
 
 start() {
     erl -name $ERL_NODE \
