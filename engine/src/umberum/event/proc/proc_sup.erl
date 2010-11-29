@@ -17,8 +17,8 @@
 
 -include_lib("include/common.hrl").
 
--define(MAX_RESTART,    5).
--define(MAX_TIME,      60).
+-define(MAX_RESTART,  5).
+-define(MAX_TIME,    60).
 
 %% --------------------------
 %% @doc 
@@ -26,7 +26,7 @@
 %% @end
 %% --------------------------
 start_child() ->
-    .supervisor:start_child(umberum.event.proc.proc_sup, []).
+  .supervisor:start_child(umberum.event.proc.proc_sup, []).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks
@@ -38,9 +38,9 @@ start_child() ->
 %% @end
 %% --------------------------
 start_link() ->
-    {ok, Pid} = .supervisor:start_link({local, ?MODULE}, ?MODULE, []),
-    ?INFO("Started processing supervisor."),
-    {ok, Pid}.
+  {ok, Pid} = .supervisor:start_link({local, ?MODULE}, ?MODULE, []),
+  ?INFO("Started processing supervisor."),
+  {ok, Pid}.
 
 %% --------------------------
 %% @doc 
@@ -48,7 +48,7 @@ start_link() ->
 %% @end
 %% --------------------------
 stop(_S) ->
-    ok.
+  ok.
 
 %% --------------------------
 %% @doc 
@@ -56,16 +56,16 @@ stop(_S) ->
 %% @end
 %% --------------------------
 init([]) ->
-    {ok,
-        {_SupFlags = {simple_one_for_one, ?MAX_RESTART, ?MAX_TIME},
-            [
-              {   undefined,                               % Id       = internal id
-                  {.umberum.event.proc.proc_fsm,start_link,[]},                  % StartFun = {M, F, A}
-                  temporary,                               % Restart  = permanent | transient | temporary
-                  2000,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
-                  worker,                                  % Type     = worker | supervisor
-                  []                                       % Modules  = [Module] | dynamic
-              }
-	        ]
-	    }
-    }.
+  {ok,
+    {_SupFlags = {simple_one_for_one, ?MAX_RESTART, ?MAX_TIME},
+      [
+        {   undefined,                 % Id     = internal id
+          {.umberum.event.proc.proc_fsm,start_link,[]},          % StartFun = {M, F, A}
+          temporary,                 % Restart  = permanent | transient | temporary
+          2000,                  % Shutdown = brutal_kill | int() >= 0 | infinity
+          worker,                  % Type   = worker | supervisor
+          []                     % Modules  = [Module] | dynamic
+        }
+	    ]
+	  }
+  }.

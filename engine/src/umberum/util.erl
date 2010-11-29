@@ -18,7 +18,7 @@
 %% @end
 %%-------------------------------------------------------------------------
 bin_to_int(Binary) ->
-    %TODO: find a built-in way of doing this
-    %TODO: consider putting this in a shared place
-    list_to_integer(binary_to_list(Binary)).
+  %TODO: find a built-in way of doing this
+  %TODO: consider putting this in a shared place
+  list_to_integer(binary_to_list(Binary)).
 

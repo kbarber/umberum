@@ -18,16 +18,16 @@
 
 %% gen_fsm callbacks
 -export([init/1, handle_event/3,
-         handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
+     handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
 
 %% FSM States
 -export([
-    'RECEIVE'/2
+  'RECEIVE'/2
 ]).
 
 -record(state, {
-                source_proc
-               }).
+        source_proc
+         }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -39,7 +39,7 @@
 %% @end
 %%-------------------------------------------------------------------------
 start_link(SourceProc) ->
-    .gen_fsm:start_link(?MODULE, [SourceProc], []).
+  .gen_fsm:start_link(?MODULE, [SourceProc], []).
 
 %%%------------------------------------------------------------------------
 %%% Callback functions from gen_server
@@ -51,8 +51,8 @@ start_link(SourceProc) ->
 %% @end
 %% --------------------------
 init([SourceProc]) ->
-    .process_flag(trap_exit, true),
-    {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
+  .process_flag(trap_exit, true),
+  {ok, 'RECEIVE', #state{source_proc=SourceProc}}.
 
 %% --------------------------
 %% @doc 
@@ -60,55 +60,55 @@ init([SourceProc]) ->
 %% @end
 %% --------------------------
 'RECEIVE'({write, SR}, State)->
-    LogEntry = [
-        {"facility",SR#syslog.facility},
-        {"severity",SR#syslog.severity},
-        {"timestamp",SR#syslog.timestamp},
-        {"hostname",SR#syslog.hostname},
-        {"tag",SR#syslog.tag},
-        {"content",SR#syslog.content}
-    ],
-    .emongo:insert(emongo_pool, ?CONF(mongodb_output_collection), LogEntry),
-    {next_state, 'RECEIVE', State};
+  LogEntry = [
+    {"facility",SR#syslog.facility},
+    {"severity",SR#syslog.severity},
+    {"timestamp",SR#syslog.timestamp},
+    {"hostname",SR#syslog.hostname},
+    {"tag",SR#syslog.tag},
+    {"content",SR#syslog.content}
+  ],
+  .emongo:insert(emongo_pool, ?CONF(mongodb_output_collection), LogEntry),
+  {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
-    {next_state, 'RECEIVE', State}.
+  {next_state, 'RECEIVE', State}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_event/3
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
+%% Returns: {next_state, NextStateName, NextStateData}      |
+%%      {next_state, NextStateName, NextStateData, Timeout} |
+%%      {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
 handle_event(Event, StateName, StateData) ->
-    {stop, {StateName, undefined_event, Event}, StateData}.
+  {stop, {StateName, undefined_event, Event}, StateData}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_sync_event/4
-%% Returns: {next_state, NextStateName, NextStateData}            |
-%%          {next_state, NextStateName, NextStateData, Timeout}   |
-%%          {reply, Reply, NextStateName, NextStateData}          |
-%%          {reply, Reply, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}                          |
-%%          {stop, Reason, Reply, NewStateData}
+%% Returns: {next_state, NextStateName, NextStateData}      |
+%%      {next_state, NextStateName, NextStateData, Timeout}   |
+%%      {reply, Reply, NextStateName, NextStateData}      |
+%%      {reply, Reply, NextStateName, NextStateData, Timeout} |
+%%      {stop, Reason, NewStateData}              |
+%%      {stop, Reason, Reply, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
 handle_sync_event(Event, _From, StateName, StateData) ->
-    {stop, {StateName, undefined_event, Event}, StateData}.
+  {stop, {StateName, undefined_event, Event}, StateData}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_info/3
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
+%% Returns: {next_state, NextStateName, NextStateData}      |
+%%      {next_state, NextStateName, NextStateData, Timeout} |
+%%      {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
 handle_info({'EXIT',_,_}, _StateName, StateData) -> 
-    % This is how we receive signals from the connection process when it stops
-    % In this case, we just stop as well.
-    {stop, normal, StateData};
+  % This is how we receive signals from the connection process when it stops
+  % In this case, we just stop as well.
+  {stop, normal, StateData};
 handle_info(_Info, StateName, StateData) ->
-    {noreply, StateName, StateData}.
+  {noreply, StateName, StateData}.
 
 %%-------------------------------------------------------------------------
 %% Func: terminate/3
@@ -117,7 +117,7 @@ handle_info(_Info, StateName, StateData) ->
 %% @private
 %%-------------------------------------------------------------------------
 terminate(_Reason, _StateName, _StateData) ->
-    ok.
+  ok.
 
 %%-------------------------------------------------------------------------
 %% Func: code_change/4
@@ -126,4 +126,4 @@ terminate(_Reason, _StateName, _StateData) ->
 %% @private
 %%-------------------------------------------------------------------------
 code_change(_OldVsn, StateName, StateData, _Extra) ->
-    {ok, StateName, StateData}.
+  {ok, StateName, StateData}.

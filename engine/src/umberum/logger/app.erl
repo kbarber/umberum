@@ -13,10 +13,10 @@
 
 %% @doc Callback for starting the application
 start(_Type, _Args) ->
-    ?INFO("umberum.logger application has started"),
-    .umberum.log:setup(),
-    .umberum.logger.sup:start_link().
+  ?INFO("umberum.logger application has started"),
+  .umberum.log:setup(),
+  .umberum.logger.sup:start_link().
 
 %% @doc Callback for when the application stops
 stop(_State) ->
-    ok.
+  ok.

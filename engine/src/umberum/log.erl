@@ -17,21 +17,21 @@
 %% @end
 %%-------------------------------------------------------------------------
 setup() ->
-    .error_logger:logfile({open,?CONF(log_file)}).
+  .error_logger:logfile({open,?CONF(log_file)}).
 
 %%-------------------------------------------------------------------------
 %% @doc Log an error message with formatting.
 %% @end
 %%-------------------------------------------------------------------------
 err(Msg,Fmt) ->
-    .error_logger:error_msg(Msg,Fmt).
+  .error_logger:error_msg(Msg,Fmt).
 
 %%-------------------------------------------------------------------------
 %% @doc Log an error message.
 %% @end
 %%-------------------------------------------------------------------------
 err(Msg) ->
-    .error_logger:error_msg(Msg).
+  .error_logger:error_msg(Msg).
 
 
 %%-------------------------------------------------------------------------
@@ -39,14 +39,14 @@ err(Msg) ->
 %% @end
 %%-------------------------------------------------------------------------
 warn(Msg,Fmt) ->
-    .error_logger:warning_msg(Msg,Fmt).
+  .error_logger:warning_msg(Msg,Fmt).
 
 %%-------------------------------------------------------------------------
 %% @doc Log a warning message.
 %% @end
 %%-------------------------------------------------------------------------
 warn(Msg) ->
-    .error_logger:warning_msg(Msg).
+  .error_logger:warning_msg(Msg).
 
 
 %%-------------------------------------------------------------------------
@@ -54,31 +54,31 @@ warn(Msg) ->
 %% @end
 %%-------------------------------------------------------------------------
 info(Msg,Fmt) ->
-    .error_logger:info_msg(Msg,Fmt).
+  .error_logger:info_msg(Msg,Fmt).
 
 %%-------------------------------------------------------------------------
 %% @doc Log an info message.
 %% @end
 %%-------------------------------------------------------------------------
 info(Msg) ->
-    .error_logger:info_msg("~p " ++ Msg, [self()]).
+  .error_logger:info_msg("~p " ++ Msg, [self()]).
 
 %%-------------------------------------------------------------------------
 %% @doc Log a debug message with formatting.
 %% @end
 %%-------------------------------------------------------------------------
 debug(Msg,Fmt) ->
-    case ?CONF(log_debug) of
-        true -> .error_logger:info_msg("DEBUG: " ++ Msg,Fmt);
-        _Other -> ok
-    end.
+  case ?CONF(log_debug) of
+    true -> .error_logger:info_msg("DEBUG: " ++ Msg,Fmt);
+    _Other -> ok
+  end.
 
 %%-------------------------------------------------------------------------
 %% @doc Log a debug message.
 %% @end
 %%-------------------------------------------------------------------------
 debug(Msg) ->
-    case ?CONF(log_debug) of
-        true -> .error_logger:info_msg("DEBUG: " ++ Msg);
-        _Other -> ok
-    end.
+  case ?CONF(log_debug) of
+    true -> .error_logger:info_msg("DEBUG: " ++ Msg);
+    _Other -> ok
+  end.

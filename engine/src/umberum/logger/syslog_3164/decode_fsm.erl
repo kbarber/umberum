@@ -16,16 +16,16 @@
 
 %% gen_fsm callbacks
 -export([init/1, handle_event/3,
-         handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
+     handle_sync_event/4, handle_info/3, terminate/3, code_change/4]).
 
 %% FSM States
 -export([
-    'RECEIVE'/2
+  'RECEIVE'/2
 ]).
 
 -record(state, {
-                router      % route pid
-                }).
+        router    % route pid
+        }).
 
 %%%------------------------------------------------------------------------
 %%% API
@@ -34,14 +34,14 @@
 %%-------------------------------------------------------------------------
 %% @spec () -> {ok,Pid} | ignore | {error,Error}
 %% @doc To be called by the supervisor in order to start the server.
-%%      If init/1 fails with Reason, the function returns {error,Reason}.
-%%      If init/1 returns {stop,Reason} or ignore, the process is
-%%      terminated and the function returns {error,Reason} or ignore,
-%%      respectively.
+%%    If init/1 fails with Reason, the function returns {error,Reason}.
+%%    If init/1 returns {stop,Reason} or ignore, the process is
+%%    terminated and the function returns {error,Reason} or ignore,
+%%    respectively.
 %% @end
 %%-------------------------------------------------------------------------
 start_link() ->
-    .gen_fsm:start_link(?MODULE, [], []).
+  .gen_fsm:start_link(?MODULE, [], []).
 
 %%%------------------------------------------------------------------------
 %%% Callback functions from gen_server
@@ -53,10 +53,10 @@ start_link() ->
 %% @end
 %% --------------------------
 init([]) ->
-    .process_flag(trap_exit, true),
-    {ok, RoutePid} = .umberum.logger.route.route_sup:start_client(self()),
-    link(RoutePid),
-    {ok, 'RECEIVE', #state{router=RoutePid}}.
+  .process_flag(trap_exit, true),
+  {ok, RoutePid} = .umberum.logger.route.route_sup:start_client(self()),
+  link(RoutePid),
+  {ok, 'RECEIVE', #state{router=RoutePid}}.
 
 %% --------------------------
 %% @doc Here we receive messages with RELP payloads, so we can extract out
@@ -65,115 +65,115 @@ init([]) ->
 %% @end
 %% --------------------------
 'RECEIVE'({msg, Event}, #state{router=Router} = State)->
-    % Extract needed details from Event data
-    {value,{_,Data}} = .lists:keysearch('relp.data',1,Event),
+  % Extract needed details from Event data
+  {value,{_,Data}} = .lists:keysearch('relp.data',1,Event),
 
-    % The decoder runs a regular expression across the data extracting out
-    % the relevant parts.
-    HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
-    ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
-    case .re:run(Data,HeaderRe,ReOpts) of
-	    {match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
-          Facility = case .umberum.util:bin_to_int(Priority) div 8 of
-            0 -> <<"kernel">>;
-            1 -> <<"user">>;
-            2 -> <<"mail">>;
-            3 -> <<"daemon">>;
-            4 -> <<"auth">>;
-            5 -> <<"syslog">>;
-            6 -> <<"lpr">>;
-            7 -> <<"news">>;
-            8 -> <<"uucp">>;
-            9 -> <<"cron">>;
-            10 -> <<"authpriv">>;
-            11 -> <<"ftp">>;
-            16 -> <<"local0">>;
-            17 -> <<"local1">>;
-            18 -> <<"local2">>;
-            19 -> <<"local3">>;
-            20 -> <<"local4">>;
-            21 -> <<"local5">>;
-            22 -> <<"local6">>;
-            24 -> <<"local7">>
-          end,
-          Severity = case .umberum.util:bin_to_int(Priority) rem 8 of
-            0 -> <<"kernel">>;
-            1 -> <<"user">>;
-            2 -> <<"mail">>;
-            3 -> <<"daemon">>;
-            4 -> <<"auth">>;
-            5 -> <<"syslog">>;
-            6 -> <<"lpr">>;
-            7 -> <<"news">>
-          end,
-	        SR = #syslog{
-	            facility = Facility,
-	            severity = Severity,
-	            timestamp = Timestamp,
-	            hostname = Hostname,
-	            tag = Tag,
-              procid = Procid,
-	            content = Content},
+  % The decoder runs a regular expression across the data extracting out
+  % the relevant parts.
+  HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
+  ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
+  case .re:run(Data,HeaderRe,ReOpts) of
+	  {match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
+      Facility = case .umberum.util:bin_to_int(Priority) div 8 of
+      0 -> <<"kernel">>;
+      1 -> <<"user">>;
+      2 -> <<"mail">>;
+      3 -> <<"daemon">>;
+      4 -> <<"auth">>;
+      5 -> <<"syslog">>;
+      6 -> <<"lpr">>;
+      7 -> <<"news">>;
+      8 -> <<"uucp">>;
+      9 -> <<"cron">>;
+      10 -> <<"authpriv">>;
+      11 -> <<"ftp">>;
+      16 -> <<"local0">>;
+      17 -> <<"local1">>;
+      18 -> <<"local2">>;
+      19 -> <<"local3">>;
+      20 -> <<"local4">>;
+      21 -> <<"local5">>;
+      22 -> <<"local6">>;
+      24 -> <<"local7">>
+      end,
+      Severity = case .umberum.util:bin_to_int(Priority) rem 8 of
+      0 -> <<"kernel">>;
+      1 -> <<"user">>;
+      2 -> <<"mail">>;
+      3 -> <<"daemon">>;
+      4 -> <<"auth">>;
+      5 -> <<"syslog">>;
+      6 -> <<"lpr">>;
+      7 -> <<"news">>
+      end,
+	    SR = #syslog{
+	      facility = Facility,
+	      severity = Severity,
+	      timestamp = Timestamp,
+	      hostname = Hostname,
+	      tag = Tag,
+        procid = Procid,
+	      content = Content},
 
-            .gen_fsm:send_event(Router, {log, SR}),
-            ok;
-        {match, _Capture} -> 
-            ?ERR("Unable to decode packet. Ignoring.");
-        nomatch -> ok;
-        _Other -> ok
-    end,
-    ?DEBUGF("DATA: ~p~n", [Data]),
-    {next_state, 'RECEIVE', State};
+      .gen_fsm:send_event(Router, {log, SR}),
+      ok;
+    {match, _Capture} -> 
+      ?ERR("Unable to decode packet. Ignoring.");
+    nomatch -> ok;
+    _Other -> ok
+  end,
+  ?DEBUGF("DATA: ~p~n", [Data]),
+  {next_state, 'RECEIVE', State};
 'RECEIVE'(_Msg,State) ->
-    {next_state, 'RECEIVE', State}.
+  {next_state, 'RECEIVE', State}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_event/3
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
+%% Returns: {next_state, NextStateName, NextStateData}      |
+%%      {next_state, NextStateName, NextStateData, Timeout} |
+%%      {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
 handle_event(Event, StateName, StateData) ->
-    {stop, {StateName, undefined_event, Event}, StateData}.
+  {stop, {StateName, undefined_event, Event}, StateData}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_sync_event/4
-%% Returns: {next_state, NextStateName, NextStateData}            |
-%%          {next_state, NextStateName, NextStateData, Timeout}   |
-%%          {reply, Reply, NextStateName, NextStateData}          |
-%%          {reply, Reply, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}                          |
-%%          {stop, Reason, Reply, NewStateData}
+%% Returns: {next_state, NextStateName, NextStateData}      |
+%%      {next_state, NextStateName, NextStateData, Timeout}   |
+%%      {reply, Reply, NextStateName, NextStateData}      |
+%%      {reply, Reply, NextStateName, NextStateData, Timeout} |
+%%      {stop, Reason, NewStateData}              |
+%%      {stop, Reason, Reply, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
 handle_sync_event(Event, _From, StateName, StateData) ->
-    {stop, {StateName, undefined_event, Event}, StateData}.
+  {stop, {StateName, undefined_event, Event}, StateData}.
 
 %%-------------------------------------------------------------------------
 %% Func: handle_info/3
-%% Returns: {next_state, NextStateName, NextStateData}          |
-%%          {next_state, NextStateName, NextStateData, Timeout} |
-%%          {stop, Reason, NewStateData}
+%% Returns: {next_state, NextStateName, NextStateData}      |
+%%      {next_state, NextStateName, NextStateData, Timeout} |
+%%      {stop, Reason, NewStateData}
 %% @private
 %%-------------------------------------------------------------------------
 handle_info({'EXIT',From,_}, StateName, #state{router=Router} = StateData) -> 
-    % This is how we receive signals from the route process when it stops
-    % In this case, we just stop as well.
-    case From of
+  % This is how we receive signals from the route process when it stops
+  % In this case, we just stop as well.
+  case From of
 	Router ->
-	    {ok, RouterPid} = .umberum.logger.route.route_sup:start_client(self()),
-	    link(RouterPid),
-	    {next_state, StateName, #state{router=RouterPid}};
+	  {ok, RouterPid} = .umberum.logger.route.route_sup:start_client(self()),
+	  link(RouterPid),
+	  {next_state, StateName, #state{router=RouterPid}};
 	_Other -> 
-	    {stop, normal, StateData}
-    end;
+	  {stop, normal, StateData}
+  end;
 handle_info({'EXIT',_,_}, _StateName, StateData) -> 
-    % This is how we receive signals from the route process when it stops
-    % In this case, we just stop as well.
-    {stop, normal, StateData};
+  % This is how we receive signals from the route process when it stops
+  % In this case, we just stop as well.
+  {stop, normal, StateData};
 handle_info(_Info, StateName, StateData) ->
-    {noreply, StateName, StateData}.
+  {noreply, StateName, StateData}.
 
 %%-------------------------------------------------------------------------
 %% Func: terminate/3
@@ -182,7 +182,7 @@ handle_info(_Info, StateName, StateData) ->
 %% @private
 %%-------------------------------------------------------------------------
 terminate(_Reason, _StateName, _StateData) ->
-    ok.
+  ok.
 
 %%-------------------------------------------------------------------------
 %% Func: code_change/4
@@ -191,4 +191,4 @@ terminate(_Reason, _StateName, _StateData) ->
 %% @private
 %%-------------------------------------------------------------------------
 code_change(_OldVsn, StateName, StateData, _Extra) ->
-    {ok, StateName, StateData}.
+  {ok, StateName, StateData}.

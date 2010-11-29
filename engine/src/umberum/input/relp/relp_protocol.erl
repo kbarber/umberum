@@ -20,14 +20,14 @@
 
 %%-------------------------------------------------------------------------
 %% @spec (Bin) -> {ok,Frame,Rest} | {more, DataLen} | {error, Error, ErrData}
-%%    Frame = {relp,Txnr,Command,DataLen,Data}
-%%    Txnr = integer()
-%%    Command = relp_command()
-%%    DataLen = integer()
-%%    Data = binary()
-%%    Rest = binary()
-%%    Error = string()
-%%    ErrData = binary()
+%%  Frame = {relp,Txnr,Command,DataLen,Data}
+%%  Txnr = integer()
+%%  Command = relp_command()
+%%  DataLen = integer()
+%%  Data = binary()
+%%  Rest = binary()
+%%  Error = string()
+%%  ErrData = binary()
 %% @type relp_command() = open|close|syslog|rsp|abort
 %% @doc Decodes the first RELP frame decoded in Bin. This is very similar to 
 %% the BIF erlang:decode_packet.
@@ -45,56 +45,56 @@
 %%-------------------------------------------------------------------------
 
 decode(Packet) ->
-    Re = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
-    ReOpts = [unicode,{capture,all,binary},dotall,ungreedy],
-    case .re:run(Packet,Re,ReOpts) of
-        {match, [_, RawTxnr, RawCommand, RawDataLen, Data]} -> 
-            Txnr = .umberum.util:bin_to_int(RawTxnr),
-            Command = binary_to_atom(RawCommand, latin1),
-	        DataLen = .umberum.util:bin_to_int(RawDataLen),
+  Re = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
+  ReOpts = [unicode,{capture,all,binary},dotall,ungreedy],
+  case .re:run(Packet,Re,ReOpts) of
+    {match, [_, RawTxnr, RawCommand, RawDataLen, Data]} -> 
+      Txnr = .umberum.util:bin_to_int(RawTxnr),
+      Command = binary_to_atom(RawCommand, latin1),
+	    DataLen = .umberum.util:bin_to_int(RawDataLen),
 
-	        % Check to see if the length matches the data size, indicating a 
-            % single RELP packet in this transmission.
-	        case DataLen+1 == size(Data) of
-                true -> 
-                    % Single RELP packet
-                    % Now check the trailer
-                    case .binary:last(Data) of
-                        10 ->
-                            {ok,{relp,Txnr,Command,DataLen,
-                                binary_part(Data,0,DataLen)},<<>>};
-                        _Other ->
-                            {error, "Mismatched trailer"}
-                    end;
-		        false -> 
-            	    case DataLen+1 > size(Data) of
-                		true ->
-                            case DataLen of
-                                0 ->
-                                    {ok,{relp,Txnr,Command,DataLen,Data},<<>>};
-                                _Other ->
-                                    {more, DataLen}
-                            end;
-                        false ->
-                            % This packet contains multiple parts. Process the 
-                            % first one and return the remainder.
-                            CurData = binary_part(Data, 0, DataLen+1),
-                            case .binary:last(CurData) of
-                                10 -> 
-                                    {ok,{
-                                        relp,Txnr,Command,DataLen,
-                                        binary_part(CurData, 0, DataLen)},
-                                        binary_part(Data, DataLen+1, 
-                                            size(Data)-(DataLen+1))
-                                    };
-                                _Other ->
-                                    {error, "Mismatched trailer"}
-                            end
-                    end
-            end;
-        {match, _Other} ->
-            {error, "Regex matched but parameters did not"};
-        _Other ->
-            % The regular expression did not match
-            {error, nomatch}
-    end.
+	    % Check to see if the length matches the data size, indicating a 
+      % single RELP packet in this transmission.
+	    case DataLen+1 == size(Data) of
+        true -> 
+          % Single RELP packet
+          % Now check the trailer
+          case .binary:last(Data) of
+            10 ->
+              {ok,{relp,Txnr,Command,DataLen,
+                binary_part(Data,0,DataLen)},<<>>};
+            _Other ->
+              {error, "Mismatched trailer"}
+          end;
+		    false -> 
+      	  case DataLen+1 > size(Data) of
+        		true ->
+              case DataLen of
+                0 ->
+                  {ok,{relp,Txnr,Command,DataLen,Data},<<>>};
+                _Other ->
+                  {more, DataLen}
+              end;
+            false ->
+              % This packet contains multiple parts. Process the 
+              % first one and return the remainder.
+              CurData = binary_part(Data, 0, DataLen+1),
+              case .binary:last(CurData) of
+                10 -> 
+                  {ok,{
+                    relp,Txnr,Command,DataLen,
+                    binary_part(CurData, 0, DataLen)},
+                    binary_part(Data, DataLen+1, 
+                      size(Data)-(DataLen+1))
+                  };
+                _Other ->
+                  {error, "Mismatched trailer"}
+              end
+          end
+      end;
+    {match, _Other} ->
+      {error, "Regex matched but parameters did not"};
+    _Other ->
+      % The regular expression did not match
+      {error, nomatch}
+  end.

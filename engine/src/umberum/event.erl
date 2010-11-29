@@ -23,16 +23,16 @@
 %% @end
 %% --------------------------
 process(Event) ->
-    ?DEBUGF("Event: ~p~n", [Event]),
+  ?DEBUGF("Event: ~p~n", [Event]),
 
-    % Start new process
-    {ok, Proc} = .umberum.event.proc.proc_sup:start_child(),
+  % Start new process
+  {ok, Proc} = .umberum.event.proc.proc_sup:start_child(),
 
-    % Send new process our event
-    .gen_fsm:send_event(Proc, {process,Event,callback,self()}),
+  % Send new process our event
+  .gen_fsm:send_event(Proc, {process,Event,callback,self()}),
 
-    % Wait for response
-    receive 
-        {ok, process_id, Id} ->
-            {ok, Id}
-    end.
+  % Wait for response
+  receive 
+    {ok, process_id, Id} ->
+      {ok, Id}
+  end.

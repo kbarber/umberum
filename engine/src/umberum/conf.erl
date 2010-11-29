@@ -15,5 +15,5 @@
 %% @end
 %%-------------------------------------------------------------------------
 get_item(Item) ->
-    {ok,Value} = .application:get_env(Item),
-    Value.
+  {ok,Value} = .application:get_env(Item),
+  Value.

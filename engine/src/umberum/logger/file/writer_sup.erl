@@ -14,8 +14,8 @@
 %% Supervisor callbacks
 -export([start_link/0, stop/1, init/1]).
 
--define(MAX_RESTART,    5).
--define(MAX_TIME,      60).
+-define(MAX_RESTART,  5).
+-define(MAX_TIME,    60).
 
 %% --------------------------
 %% @doc A startup function for spawning new file writing FSM.
@@ -23,7 +23,7 @@
 %% @end
 %% --------------------------
 start_client(Router) ->
-    .supervisor:start_child(umberum.logger.file.writer_sup, [Router]).
+  .supervisor:start_child(umberum.logger.file.writer_sup, [Router]).
 
 %%----------------------------------------------------------------------
 %% Supervisor behaviour callbacks
@@ -38,7 +38,7 @@ start_client(Router) ->
 %% @end
 %% --------------------------
 start_link() ->
-    .supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+  .supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% --------------------------
 %% @doc 
@@ -46,7 +46,7 @@ start_link() ->
 %% @end
 %% --------------------------
 stop(_S) ->
-    ok.
+  ok.
 
 %% --------------------------
 %% @doc 
@@ -54,18 +54,18 @@ stop(_S) ->
 %% @end
 %% --------------------------
 init([]) ->
-    .pg2:create('umberum.logger.file.writer_fsm'),
-    {ok,
-        {_SupFlags = {simple_one_for_one, ?MAX_RESTART, ?MAX_TIME},
-            [
-              % TCP Client
-              {   undefined,                               % Id       = internal id
-                  {.umberum.logger.file.writer_fsm,start_link,[]},                  % StartFun = {M, F, A}
-                  temporary,                               % Restart  = permanent | transient | temporary
-                  2000,                                    % Shutdown = brutal_kill | int() >= 0 | infinity
-                  worker,                                  % Type     = worker | supervisor
-                  [.umberum.logger.file.writer_fsm]        % Modules  = [Module] | dynamic
-              }
-            ]
+  .pg2:create('umberum.logger.file.writer_fsm'),
+  {ok,
+    {_SupFlags = {simple_one_for_one, ?MAX_RESTART, ?MAX_TIME},
+      [
+        % TCP Client
+        {   undefined,                 % Id     = internal id
+          {.umberum.logger.file.writer_fsm,start_link,[]},          % StartFun = {M, F, A}
+          temporary,                 % Restart  = permanent | transient | temporary
+          2000,                  % Shutdown = brutal_kill | int() >= 0 | infinity
+          worker,                  % Type   = worker | supervisor
+          [.umberum.logger.file.writer_fsm]    % Modules  = [Module] | dynamic
         }
-    }.
+      ]
+    }
+  }.
