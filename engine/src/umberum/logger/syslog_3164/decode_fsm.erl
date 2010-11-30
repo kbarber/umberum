@@ -24,7 +24,8 @@
 ]).
 
 -record(state, {
-        router    % route pid
+        router,    % route pid
+        decoder
         }).
 
 %%%------------------------------------------------------------------------
@@ -56,7 +57,10 @@ init([]) ->
   .process_flag(trap_exit, true),
   {ok, RoutePid} = .umberum.logger.route.route_sup:start_client(self()),
   link(RoutePid),
-  {ok, 'RECEIVE', #state{router=RoutePid}}.
+  HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
+  ReOpts = [unicode,dotall,ungreedy],
+  {ok, Decoder} = .re:compile(HeaderRe,ReOpts),
+  {ok, 'RECEIVE', #state{router=RoutePid,decoder=Decoder}}.
 
 %% --------------------------
 %% @doc Here we receive messages with RELP payloads, so we can extract out
@@ -64,15 +68,13 @@ init([]) ->
 %%
 %% @end
 %% --------------------------
-'RECEIVE'({msg, Event}, #state{router=Router} = State)->
+'RECEIVE'({msg, Event}, #state{router=Router,decoder=Decoder} = State)->
   % Extract needed details from Event data
   {value,{_,Data}} = .lists:keysearch('relp.data',1,Event),
 
   % The decoder runs a regular expression across the data extracting out
   % the relevant parts.
-  HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
-  ReOpts = [unicode,{capture,all,binary},dotall, ungreedy],
-  case .re:run(Data,HeaderRe,ReOpts) of
+  case .re:run(Data,Decoder,[{capture,all,binary}]) of
 	  {match, [_All,Priority,Timestamp,Hostname,Tag,_,Procid,Content]} -> 
       Facility = case .umberum.util:bin_to_int(Priority) div 8 of
       0 -> <<"kernel">>;

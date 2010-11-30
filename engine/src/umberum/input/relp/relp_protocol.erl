@@ -16,7 +16,16 @@
 
 -include_lib("include/common.hrl").
 
--export([decode/1]).
+-export([decode/2,decode/1,init/0]).
+
+%%-------------------------------------------------------------------------
+%% @spec () -> {ok, MP}
+%% Create a regular expression object for re-use later.
+%%-------------------------------------------------------------------------
+init() ->
+  Re = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
+  ReOpts = [unicode,dotall,ungreedy],
+  .re:compile(Re,ReOpts).
 
 %%-------------------------------------------------------------------------
 %% @spec (Bin) -> {ok,Frame,Rest} | {more, DataLen} | {error, Error, ErrData}
@@ -41,13 +50,17 @@
 %% If the packet does not conform to the protocol format `{error,Reason}' is 
 %% returned.
 %%
+%% For efficiency use it thusly:
+%%
+%% A = init().
+%%
+%% decode(Packet,A).
+%%
 %% @end
 %%-------------------------------------------------------------------------
-
-decode(Packet) ->
-  Re = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
-  ReOpts = [unicode,{capture,all,binary},dotall,ungreedy],
-  case .re:run(Packet,Re,ReOpts) of
+decode(Packet, Re) ->
+  {ok, RealRe} = Re,
+  case .re:run(Packet,RealRe,[{capture,all,binary}]) of
     {match, [_, RawTxnr, RawCommand, RawDataLen, Data]} -> 
       Txnr = .umberum.util:bin_to_int(RawTxnr),
       Command = binary_to_atom(RawCommand, latin1),
@@ -98,3 +111,14 @@ decode(Packet) ->
       % The regular expression did not match
       {error, nomatch}
   end.
+
+%%-------------------------------------------------------------------------
+%% @spec (Bin, Re) -> {ok,Frame,Rest} | {more, DataLen} | {error, Error, ErrData}
+%%
+%% Convenience method. Same as decode(Packet, init()).
+%%
+%% @end
+%%-------------------------------------------------------------------------
+decode(Packet) ->
+  decode(Packet, init()).
+

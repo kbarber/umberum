@@ -24,10 +24,11 @@
 ]).
 
 -record(state, {
-        socket,  % client socket
-        addr,    % client address
-        session,   % session pid
-        last_data  % last_data
+        socket,     % client socket
+        addr,       % client address
+        session,    % session pid
+        last_data,  % last_data
+        decoder     % decoder
         }).
 
 %%-------------------------------------------------------------------------
@@ -53,7 +54,7 @@ set_socket(Pid, Socket) when is_pid(Pid), is_port(Socket) ->
 %%-------------------------------------------------------------------------
 init([]) ->
   .process_flag(trap_exit, true),
-  {ok, 'WAIT_FOR_SOCKET', #state{}}.
+  {ok, 'WAIT_FOR_SOCKET', #state{decoder = .umberum.input.relp.relp_protocol:init()}}.
 
 %%-------------------------------------------------------------------------
 %% @doc The WAIT_FOR_SOCKET state awaits a new established socket to be passed
@@ -93,7 +94,7 @@ init([]) ->
 %% @end
 %%-------------------------------------------------------------------------
 'WAIT_FOR_DATA'({data, Data}, 
-  #state{session=Session,last_data=LastData} = State) ->
+  #state{session=Session,last_data=LastData,decoder=Decoder} = State) ->
   
   ?DEBUGF("RCV: ~p~n", [binary_to_list(Data)]),
 
@@ -101,7 +102,7 @@ init([]) ->
   % trialing one to make a complete frame.
   CombinedData = <<LastData/binary, Data/binary>>,
 
-  case process_packet(CombinedData, Session) of
+  case process_packet(CombinedData, Session, Decoder) of
     ok ->
       % If the packet is okay, get ready for another.
       {next_state, 'WAIT_FOR_DATA', State#state{last_data = <<>>}};
@@ -140,8 +141,8 @@ init([]) ->
 %% @end
 %% @private
 %%-------------------------------------------------------------------------
-process_packet(Packet, Session) ->
-  case .umberum.input.relp.relp_protocol:decode(Packet) of
+process_packet(Packet, Session, Decoder) ->
+  case .umberum.input.relp.relp_protocol:decode(Packet, Decoder) of
     {ok,{relp,Txnr,Command,DataLen,Data},Rest} ->
       PR = #relp{
         txnr = Txnr,
@@ -151,7 +152,7 @@ process_packet(Packet, Session) ->
       .gen_fsm:send_event(Session, {Command, PR}),
 
       case size(Rest) > 0 of
-        true -> process_packet(Rest,Session);
+        true -> process_packet(Rest,Session, Decoder);
         false -> ok
       end;
     {error, Msg} ->
