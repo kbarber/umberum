@@ -54,7 +54,8 @@ set_socket(Pid, Socket) when is_pid(Pid), is_port(Socket) ->
 %%-------------------------------------------------------------------------
 init([]) ->
   .process_flag(trap_exit, true),
-  {ok, 'WAIT_FOR_SOCKET', #state{decoder = .umberum.input.relp.relp_protocol:init()}}.
+  {ok, Decoder} = .umberum.input.relp.relp_protocol:get_decoder(),
+  {ok, 'WAIT_FOR_SOCKET', #state{decoder = Decoder}}.
 
 %%-------------------------------------------------------------------------
 %% @doc The WAIT_FOR_SOCKET state awaits a new established socket to be passed

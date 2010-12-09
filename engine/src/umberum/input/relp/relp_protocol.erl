@@ -16,13 +16,13 @@
 
 -include_lib("include/common.hrl").
 
--export([decode/2,decode/1,init/0]).
+-export([decode/2,decode/1,get_decoder/0]).
 
 %%-------------------------------------------------------------------------
 %% @spec () -> {ok, MP}
 %% Create a regular expression object for re-use later.
 %%-------------------------------------------------------------------------
-init() ->
+get_decoder() ->
   Re = "^(\\d{1,9}) (open|close|syslog|rsp|abort) (\\d{1,9}?)[\\s|\\n](.*?)",
   ReOpts = [unicode,dotall,ungreedy],
   .re:compile(Re,ReOpts).
@@ -52,15 +52,14 @@ init() ->
 %%
 %% For efficiency use it thusly:
 %%
-%% A = init().
+%% A = get_decoder().
 %%
 %% decode(Packet,A).
 %%
 %% @end
 %%-------------------------------------------------------------------------
 decode(Packet, Re) ->
-  {ok, RealRe} = Re,
-  case .re:run(Packet,RealRe,[{capture,all,binary}]) of
+  case .re:run(Packet, Re,[{capture,all,binary}]) of
     {match, [_, RawTxnr, RawCommand, RawDataLen, Data]} -> 
       Txnr = .umberum.util:bin_to_int(RawTxnr),
       Command = binary_to_atom(RawCommand, latin1),
@@ -120,5 +119,5 @@ decode(Packet, Re) ->
 %% @end
 %%-------------------------------------------------------------------------
 decode(Packet) ->
-  decode(Packet, init()).
+  decode(Packet, get_decoder()).
 
