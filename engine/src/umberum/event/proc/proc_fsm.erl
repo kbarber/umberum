@@ -53,7 +53,8 @@ init([]) ->
   {ok, 'NEW', #state{id = 0}}.
 
 %% --------------------------
-%% @doc 
+%% @doc This will receive an event for processing, returning an ID to the 
+%% Callback for future reference.
 %%
 %% @end
 %% --------------------------

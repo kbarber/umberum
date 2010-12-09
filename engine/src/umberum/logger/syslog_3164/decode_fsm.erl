@@ -59,8 +59,12 @@ init([]) ->
   link(RoutePid),
   HeaderRe = "^<(\\d{1,3})>(.{32})\\s(.+)\\s(.+)(\\[(\\d+)\\]){0,1}:\\s(.*?)",
   ReOpts = [unicode,dotall,ungreedy],
-  {ok, Decoder} = .re:compile(HeaderRe,ReOpts),
-  {ok, 'RECEIVE', #state{router=RoutePid,decoder=Decoder}}.
+  case .re:compile(HeaderRe,ReOpts) of
+    {ok, Decoder} ->
+      {ok, 'RECEIVE', #state{router=RoutePid,decoder=Decoder}};
+    Other ->
+      Other
+  end.  
 
 %% --------------------------
 %% @doc Here we receive messages with RELP payloads, so we can extract out

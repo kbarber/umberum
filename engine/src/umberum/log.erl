@@ -7,8 +7,8 @@
 %% --------------------------
 
 -module(umberum.log).
--export([setup/0]).
--export([err/1, err/2, warn/1, warn/2, info/1, info/2, debug/1, debug/2]).
+-export([setup/0, err/1, err/2, warn/1, warn/2, info/1, info/2, debug/1, 
+  debug/2]).
 
 -include_lib("include/common.hrl").
 
@@ -23,6 +23,7 @@ setup() ->
 %% @doc Log an error message with formatting.
 %% @end
 %%-------------------------------------------------------------------------
+-spec err(string(), []) -> ok.
 err(Msg,Fmt) ->
   .error_logger:error_msg(Msg,Fmt).
 
